@@ -1,0 +1,16 @@
+# Dependencies and build
+node_modules
+dist
+.output
+.vinxi
+.tanstack
+
+# Local Netlify folder
+.netlify
+
+# Environment and editor
+.env
+.env.*
+!.env.example
+*.local
+.DS_Store
