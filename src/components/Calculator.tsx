@@ -19,6 +19,7 @@ import {
   CircleDollarSign,
   Clock3,
   Coins,
+  Landmark,
   Languages,
   Menu,
   Plus,
@@ -284,8 +285,18 @@ const englishTranslations: Record<string, string> = {
   'Járulékalap': 'Contribution base',
   'Minimálbér': 'Minimum wage',
   'Szakmunkás bérminimum': 'Guaranteed skilled wage',
-  'Fodrász és kozmetikus általában szakmunkás bérminimumon van. A szépségszalon költséghányada 2026-tól 45%.':
-    'Hairdressers and beauticians usually use the skilled-wage base. The beauty-salon cost ratio is 45% from 2026.',
+  'Fodrász és kozmetikus általában szakmunkás bérminimumon van.':
+    'Hairdressers and beauticians usually use the skilled-wage base.',
+  'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
+    'Hairdressing and beauty care are usually 80% if that is your only activity. Any other activity makes the whole year 45%. 90% is for retail.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
+    'The cost ratio only splits revenue for tax. It is not an extra expense; Monthly expenses stay what you entered.',
+  'Kitermelendő havi bevétel': 'Required monthly revenue',
+  'Ebből költséghányad, nem valós kiadás': 'Of which cost ratio, not a real expense',
+  'Ebből átalányjövedelem': 'Of which flat-rate income',
+  'csak a beírt költségek, adó nélkül': 'entered costs only, excluding tax',
+  'fodrász': 'hairdresser',
+  'Havi adó': 'Monthly tax',
   'Adómentes havi bevétel': 'Tax-free monthly revenue',
   'Havi minimum TB + szocho': 'Monthly minimum social charges',
   'Mellékállásban eddig a havi bevételig SZJA, TB és szocho is 0 Ft.':
@@ -619,8 +630,18 @@ const czechTranslations: Record<string, string> = {
   'Járulékalap': 'Základ odvodů',
   'Minimálbér': 'Minimální mzda',
   'Szakmunkás bérminimum': 'Zaručená mzda',
-  'Fodrász és kozmetikus általában szakmunkás bérminimumon van. A szépségszalon költséghányada 2026-tól 45%.':
-    'Kadeřník a kosmetička obvykle používají zaručenou mzdu. Nákladový poměr v kosmetice je od roku 2026 45 %.',
+  'Fodrász és kozmetikus általában szakmunkás bérminimumon van.':
+    'Kadeřník a kosmetička obvykle používají zaručenou mzdu.',
+  'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
+    'Kadeřnictví a péče o krásu jsou obvykle 80 %, pokud z toho máte jediný příjem. Jiná činnost znamená 45 % za celý rok. 90 % platí pro maloobchod.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
+    'Nákladový poměr jen rozděluje obrat pro daň. Není to další výdaj; Měsíční výdaje zůstanou tím, co jste zadali.',
+  'Kitermelendő havi bevétel': 'Potřebný měsíční obrat',
+  'Ebből költséghányad, nem valós kiadás': 'Z toho nákladový poměr, ne skutečný výdaj',
+  'Ebből átalányjövedelem': 'Z toho paušální příjem',
+  'csak a beírt költségek, adó nélkül': 'jen zadané náklady, bez daně',
+  'fodrász': 'kadeřník',
+  'Havi adó': 'Měsíční daň',
   'Adómentes havi bevétel': 'Měsíční obrat bez daně',
   'Havi minimum TB + szocho': 'Měsíční minimum odvodů',
   'Mellékállásban eddig a havi bevételig SZJA, TB és szocho is 0 Ft.':
@@ -956,8 +977,18 @@ const slovakTranslations: Record<string, string> = {
   'Járulékalap': 'Základ odvodov',
   'Minimálbér': 'Minimálna mzda',
   'Szakmunkás bérminimum': 'Zaručená mzda',
-  'Fodrász és kozmetikus általában szakmunkás bérminimumon van. A szépségszalon költséghányada 2026-tól 45%.':
-    'Kaderník a kozmetička zvyčajne používajú zaručenú mzdu. Nákladový pomer v kozmetike je od roku 2026 45 %.',
+  'Fodrász és kozmetikus általában szakmunkás bérminimumon van.':
+    'Kaderník a kozmetička zvyčajne používajú zaručenú mzdu.',
+  'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
+    'Kaderníctvo a starostlivosť o krásu sú zvyčajne 80 %, ak z toho máte jediný príjem. Iná činnosť znamená 45 % za celý rok. 90 % platí pre maloobchod.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
+    'Nákladový pomer len rozdeľuje obrat pre daň. Nie je to ďalší výdavok; Mesačné výdavky ostanú tým, čo ste zadali.',
+  'Kitermelendő havi bevétel': 'Potrebný mesačný obrat',
+  'Ebből költséghányad, nem valós kiadás': 'Z toho nákladový pomer, nie skutočný výdavok',
+  'Ebből átalányjövedelem': 'Z toho paušálny príjem',
+  'csak a beírt költségek, adó nélkül': 'len zadané náklady, bez dane',
+  'fodrász': 'kaderník',
+  'Havi adó': 'Mesačná daň',
   'Adómentes havi bevétel': 'Mesačný obrat bez dane',
   'Havi minimum TB + szocho': 'Mesačné minimum odvodov',
   'Mellékállásban eddig a havi bevételig SZJA, TB és szocho is 0 Ft.':
@@ -1172,7 +1203,7 @@ type TaxSettings = {
 const initialTax: TaxSettings = {
   form: 'kata',
   kataMonthly: 0,
-  atalanyCostRatio: 45,
+  atalanyCostRatio: 80,
   atalanyStatus: 'main',
   atalanyWageBase: 'skilled',
   under25: false,
@@ -1207,7 +1238,7 @@ const isAtalanyWageBase = (value: unknown): value is AtalanyWageBase =>
 const parseAtalanyCostRatio = (value: unknown): AtalanyCostRatio => {
   const ratio = Number(value)
   if (ratio === 40 || ratio === 45) return 45
-  return isAtalanyCostRatio(ratio) ? ratio : 45
+  return isAtalanyCostRatio(ratio) ? ratio : 80
 }
 
 const familyChildOptions = [0, 1, 2, 3, 4] as const
@@ -2612,6 +2643,11 @@ function TaxEditor({
   const t = (text: string) => translate(language, text)
   const taxAnnual = annualTaxOnBase(baseAnnual, value)
   const taxMonthly = taxAnnual / 12
+  const neededAnnual = Math.max(0, baseAnnual) + taxAnnual
+  const deemedCostMonthly =
+    (neededAnnual * value.atalanyCostRatio) / 100 / 12
+  const deemedIncomeMonthly =
+    (neededAnnual * atalanyIncomeShare(value.atalanyCostRatio)) / 12
   const money = (amount: number) =>
     amount
       ? formatMoney(amount, language, currency, { hufPerEur, hufPerCzk })
@@ -2769,9 +2805,7 @@ function TaxEditor({
             </div>
           )}
           <p className="field-hint">
-            {t(
-              'Fodrász és kozmetikus általában szakmunkás bérminimumon van. A szépségszalon költséghányada 2026-tól 45%.',
-            )}
+            {t('Fodrász és kozmetikus általában szakmunkás bérminimumon van.')}
           </p>
           <div
             className="compact-switch pay-mode-switch"
@@ -2788,11 +2822,44 @@ function TaxEditor({
                 }
                 key={ratio}
               >
-                {ratio}%
+                {ratio === 80 ? `80% · ${t('fodrász')}` : `${ratio}%`}
               </button>
             ))}
           </div>
+          <p className="field-hint">
+            {t(
+              'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.',
+            )}
+          </p>
+          <p className="field-hint">
+            {t(
+              'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.',
+            )}
+          </p>
           <div className="tax-thresholds">
+            <div className="tax-split">
+              <div className="inline-total">
+                <span>{t('Kitermelendő havi bevétel')}</span>
+                <strong>
+                  {money(neededAnnual / 12)}
+                  {` ${t('/ hó')}`}
+                </strong>
+              </div>
+              <div className="inline-total tax-split-part">
+                <span>{t('Ebből költséghányad, nem valós kiadás')}</span>
+                <strong>
+                  {money(deemedCostMonthly)}
+                  {` ${t('/ hó')}`}
+                </strong>
+              </div>
+              <div className="inline-total tax-split-part">
+                <span>{t('Ebből átalányjövedelem')}</span>
+                <strong>
+                  {money(deemedIncomeMonthly)}
+                  {` ${t('/ hó')}`}
+                </strong>
+              </div>
+            </div>
             <div className="inline-total">
               <span>{t('Adómentes havi bevétel')}</span>
               <strong>
@@ -3668,7 +3735,7 @@ export default function Calculator() {
 
   const currentResultText = {
     hu: {
-      solo: `Egyszemélyes szalon – fenntartható óradíj: ${formatFt(metrics.solo.hourly)}, éves kiadás: ${formatFt(metrics.solo.annual)}.`,
+      solo: `Egyszemélyes szalon – fenntartható óradíj: ${formatFt(metrics.solo.hourly)}, éves kiadás: ${formatFt(metrics.solo.taxBase)}.`,
       team: `Többszemélyes szalon – éves költség személyenként: ${formatFt(metrics.team.perPerson)}, teljes éves kiadás: ${formatFt(metrics.team.annual)}.`,
       owner: `Saját órabérem: ${formatFt(metrics.owner.hourly)}, zsebben marad: ${formatFt(metrics.owner.pocket / 12)} / hó, haszon a munkatársakon: ${formatFt(metrics.owner.staffProfit / 12)} / hó.`,
       employee:
@@ -3685,7 +3752,7 @@ export default function Calculator() {
         : 'Árlista – add meg a szolgáltatások időtartamát. Az ár az óradíjból jön.',
     },
     en: {
-      solo: `Solo salon – sustainable hourly rate: ${formatFt(metrics.solo.hourly)}, annual expenses: ${formatFt(metrics.solo.annual)}.`,
+      solo: `Solo salon – sustainable hourly rate: ${formatFt(metrics.solo.hourly)}, annual expenses: ${formatFt(metrics.solo.taxBase)}.`,
       team: `Team salon – annual cost per person: ${formatFt(metrics.team.perPerson)}, total annual expenses: ${formatFt(metrics.team.annual)}.`,
       owner: `My hourly rate: ${formatFt(metrics.owner.hourly)}, take-home: ${formatFt(metrics.owner.pocket / 12)} / month, profit from coworkers: ${formatFt(metrics.owner.staffProfit / 12)} / month.`,
       employee:
@@ -3702,7 +3769,7 @@ export default function Calculator() {
         : 'Price list – enter service durations. Prices come from the hourly rate.',
     },
     cs: {
-      solo: `Samostatný salon – udržitelná hodinová sazba: ${formatFt(metrics.solo.hourly)}, roční výdaje: ${formatFt(metrics.solo.annual)}.`,
+      solo: `Samostatný salon – udržitelná hodinová sazba: ${formatFt(metrics.solo.hourly)}, roční výdaje: ${formatFt(metrics.solo.taxBase)}.`,
       team: `Týmový salon – roční náklad na osobu: ${formatFt(metrics.team.perPerson)}, celkové roční výdaje: ${formatFt(metrics.team.annual)}.`,
       owner: `Moje hodinová sazba: ${formatFt(metrics.owner.hourly)}, zbude v kapse: ${formatFt(metrics.owner.pocket / 12)} / měsíc, zisk z kolegů: ${formatFt(metrics.owner.staffProfit / 12)} / měsíc.`,
       employee:
@@ -3719,7 +3786,7 @@ export default function Calculator() {
         : 'Ceník – zadejte dobu trvání služeb. Cena vychází z hodinové sazby.',
     },
     sk: {
-      solo: `Samostatný salón – udržateľná hodinová sadzba: ${formatFt(metrics.solo.hourly)}, ročné výdavky: ${formatFt(metrics.solo.annual)}.`,
+      solo: `Samostatný salón – udržateľná hodinová sadzba: ${formatFt(metrics.solo.hourly)}, ročné výdavky: ${formatFt(metrics.solo.taxBase)}.`,
       team: `Tímový salón – ročný náklad na osobu: ${formatFt(metrics.team.perPerson)}, celkové ročné výdavky: ${formatFt(metrics.team.annual)}.`,
       owner: `Moja hodinová sadzba: ${formatFt(metrics.owner.hourly)}, zostane v peňaženke: ${formatFt(metrics.owner.pocket / 12)} / mesiac, zisk z kolegov: ${formatFt(metrics.owner.staffProfit / 12)} / mesiac.`,
       employee:
@@ -4088,19 +4155,16 @@ export default function Calculator() {
                 />
                 <MetricCard
                   label="Havi kiadás"
-                  value={moneyOrDash(metrics.solo.monthly)}
-                  detail={
-                    metrics.solo.tax
-                      ? `${t('ebből adó')} ${formatFt(metrics.solo.tax / 12)}`
-                      : 'átlagos havi teher'
-                  }
+                  value={moneyOrDash(metrics.solo.taxBase / 12)}
+                  detail={annualValue(metrics.solo.taxBase)}
+                  note={t('csak a beírt költségek, adó nélkül')}
                   icon={ArrowDownRight}
                 />
                 <MetricCard
-                  label="Éves összes"
-                  value={moneyOrDash(metrics.solo.annual)}
-                  detail={hourDetail(metrics.solo.hours)}
-                  icon={Building2}
+                  label="Havi adó"
+                  value={moneyOrDash(metrics.solo.tax / 12)}
+                  detail={annualValue(metrics.solo.tax)}
+                  icon={Landmark}
                 />
               </div>
 
@@ -4314,19 +4378,16 @@ export default function Calculator() {
                 />
                 <MetricCard
                   label="Havi szükséglet"
-                  value={moneyOrDash(metrics.owner.monthly)}
-                  detail={
-                    metrics.owner.tax
-                      ? `${t('ebből adó')} ${formatFt(metrics.owner.tax / 12)}`
-                      : 'szalonrésszel együtt'
-                  }
+                  value={moneyOrDash(metrics.owner.taxBase / 12)}
+                  detail={annualValue(metrics.owner.taxBase)}
+                  note={t('csak a beírt költségek, adó nélkül')}
                   icon={ArrowDownRight}
                 />
                 <MetricCard
-                  label="Éves szükséglet"
-                  value={moneyOrDash(metrics.owner.annual)}
-                  detail={hourDetail(metrics.owner.hours)}
-                  icon={CircleDollarSign}
+                  label="Havi adó"
+                  value={moneyOrDash(metrics.owner.tax / 12)}
+                  detail={annualValue(metrics.owner.tax)}
+                  icon={Landmark}
                 />
               </div>
               <div className="two-column-layout">

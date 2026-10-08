@@ -1095,6 +1095,33 @@ button {
   margin: 0;
 }
 
+.tax-split {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.tax-split .inline-total {
+  background: transparent;
+  padding: 10px 12px;
+}
+
+.tax-split .inline-total:first-child {
+  background: var(--iris-soft);
+}
+
+.tax-split-part {
+  padding-left: 20px;
+}
+
+.tax-split-part span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .pay-mode-fields {
   margin-top: 16px;
 }
