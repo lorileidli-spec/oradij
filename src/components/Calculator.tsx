@@ -10,24 +10,27 @@ import {
   type SetStateAction,
 } from 'react'
 import {
+  Armchair,
   ArrowDownRight,
   ArrowUpRight,
   Banknote,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  CircleAlert,
   CircleDollarSign,
+  CircleHelp,
   Clock3,
   Coins,
-  Landmark,
   Languages,
+  Lock,
   Menu,
   Plus,
   Printer,
   RotateCcw,
   Scissors,
+  ShieldCheck,
   Sparkles,
-  Tags,
   Trash2,
   TrendingUp,
   UserRound,
@@ -36,8 +39,7 @@ import {
 } from 'lucide-react'
 
 type Period = 'month' | 'quarter' | 'halfyear' | 'year'
-type TabId = 'solo' | 'team' | 'owner' | 'employee' | 'pricing' | 'pricelist'
-type PricelistSource = 'solo' | 'owner' | 'employee'
+type TabId = 'solo' | 'team' | 'owner' | 'employee' | 'pricing'
 type Language = 'hu' | 'en' | 'cs' | 'sk'
 type Currency = 'HUF' | 'EUR' | 'CZK'
 type FxRates = { hufPerEur: number; hufPerCzk: number }
@@ -120,45 +122,103 @@ const englishTranslations: Record<string, string> = {
   'Ajánlott ár': 'Recommended price',
   'A fodrász részesedése': 'Stylist share',
   'A naptár hány százaléka van tényleg tele.': 'How full the calendar actually is.',
-  'A százalék a teljes vendégárból számolódik.':
-    'The percent is taken from the full guest price.',
-  'A százalék a vendégárból az anyag után számolódik.':
-    'The percent is taken from the guest price after materials.',
-  'A vendégárból ennyi marad a munkatársnál.':
-    'This is the coworker share of the guest price.',
-  'Anyag levonása előbb': 'Deduct materials first',
-  'a teljes vendégárból': 'from the full guest price',
-  'anyag után a vendégárból': 'from the guest price after materials',
+  '100% = minden óra ki van töltve. Ha lejjebb húzod, az óradíj nő, mert ugyanazt kevesebb vendégórából kell kitermelni.':
+    '100% means every hour is booked. Drag it down and the hourly rate rises, because the same amount must come from fewer guest hours.',
+  'Átlagos szolgáltatás': 'Average service',
+  'Heti vendég': 'Guests per week',
+  'átlagos időtartammal': 'at the average duration',
+  'az árlista átlagos idejével': 'from the average duration on the price list',
+  'Add meg az árlistán a szolgáltatások idejét.':
+    'Enter service durations on the price list.',
+  'vendég / hét': 'guests / week',
+  'ebből adó és HIPA': 'of which tax and HIPA',
   'Az ajánlott ár a vendégnek mutatott, felfelé kerekített összeg. Alatta a pontos számolt érték látszik, ha eltér.':
     'The recommended price is the guest-facing amount, rounded up. The exact calculated value appears underneath if it differs.',
+  'Az áremelés tervező {percent}%-ot javasol':
+    'The price planner suggests {percent}%',
+  'Alkalmazza az összes árra': 'Apply to all prices',
+  'A vendégárakra megy. Az anyagot külön nem szorozza. Kikapcsolva visszaáll a pipa előtti ár.':
+    'It updates guest prices. Materials are not multiplied separately. Turning it off restores the prices from before the check.',
+  'Töltsd ki az áremelés tervezőt, ha a változást az összes árra rátennéd.':
+    'Fill in the price planner if you want this change applied to every price.',
+  'emelés után': 'after the increase',
+  'éves emelés alkalmazva': 'yearly increase applied',
   'Bérezés módja': 'Pay arrangement',
   'Elszámolás': 'Settlement',
   'Fix bér': 'Fixed salary',
   'Járulék és juttatások': 'Contributions and benefits',
+  'A részesedést bruttó bérnek vesszük. A szalon szochója 2026-ban 13%, ez a Járulék sor. Ha a munkatárs vállalkozóként számláz, ne a százalékos alkalmazotti módot használd.':
+    'The share is treated as gross pay. The salon’s social tax is 13% in 2026; that is the Contributions row. If the coworker invoices as a self-employed trader, do not use the employee percentage mode.',
   'Kihasználtság': 'Occupancy',
   'kihasználtsággal': 'occupancy',
   'Munkatárs részesedése': 'Coworker share',
   'számolt': 'calculated',
   'Százalékos rendszer': 'Percentage system',
-  'Átlagos havi termelés': 'Average monthly production',
-  'A munkatárs havi vendégforgalma. Ebből megy a százalék, a maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg. Az óradíjat a termelésből számoljuk vissza.':
-    'The coworker’s monthly guest revenue. The percent comes out of this; the rest appears on My hourly rate under Profit from coworkers. The hourly rate is calculated back from production.',
-  'A havi termelésből ennyi a munkatársé. A maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg.':
-    'This share of monthly production goes to the coworker. The rest appears on My hourly rate under Profit from coworkers.',
-  'A százalék az anyag nélküli termelésből számolódik. Az átlagos termelésbe az anyag nélküli forgalmat írd.':
-    'The percent is taken from production after materials. Enter production excluding materials.',
+  'A részesedés megmondja, hogyan oszlik a vendégforgalom. A kalkulátor kiszámolja, mekkora óradíj kell a szalonköltséghez és a járulékhoz.':
+    'The share says how guest revenue is split. The calculator works out the hourly rate needed to cover salon costs and contributions.',
+  'Add meg, mennyit vigyen haza legalább, és hány százalékot kap a termelésből. Az óradíj addig nő, amíg a bér, a járulék és a szalonköltség is megvan.':
+    'Enter the minimum take-home and the production share. The hourly rate rises until pay, contributions and salon costs are covered.',
+  'Legalább ennyit visz haza': 'Minimum take-home',
+  'Ha üres, csak a szalonköltségből számolunk. Ha beírod, az óradíj addig nő, amíg ez a bér megvan.':
+    'If empty, only salon costs are used. If you enter an amount, the hourly rate rises until this pay is reached.',
+  'a megadott célbér': 'the target pay you entered',
+  'több a célbérnél, mert a szalonköltség többet kíván':
+    'more than the target pay, because salon costs require more',
+  'A visz haza nettó. A százalék a bruttó felosztás. A szalon haszna a maradék, nem kell külön sort kitölteni.':
+    'Take-home is net. The percent splits gross production. Salon profit is the leftover; you do not fill a separate profit row.',
+  'Zsebben maradó nettó. Az óradíj addig nő, amíg ez megvan a SZJA, TB és szocho mellett.':
+    'Net in pocket. The hourly rate rises until this remains after income tax, social security and employer social tax.',
+  'Papíros munkaidő': 'Contracted hours',
+  '4 óra': '4 hours',
+  '6 óra': '6 hours',
+  '8 óra': '8 hours',
+  'A papíros óraszám a TB- és szocho-minimumot arányosítja a minimálbérhez. Az óradíj a fenti munkaidőből jön.':
+    'Contracted hours scale the social-security and employer-tax floor to the minimum wage. The hourly rate still comes from the work-time settings above.',
+  'A 25 év alatti és a családi kedvezmény a munkatárs nettójához jön pluszban. A célbér kedvezmény nélkül értendő.':
+    'The under-25 and family credits are added on top of the coworker’s take-home. The target pay is before those credits.',
+  'a kedvezmény pluszban a munkatársé, nem a szaloné':
+    'the tax credit stays with the coworker, not the salon',
+  'járulékminimum a papíros óraszám szerint':
+    'contribution floor from contracted hours',
+  '25 év alatt az SZJA a mentességi plafonig 0':
+    'under 25, income tax is 0 up to the exemption cap',
+  'nettó, SZJA és TB után': 'net, after income tax and social security',
+  'Bruttó bér': 'Gross pay',
+  'ebből megy a 15% SZJA és a 18,5% TB':
+    '15% income tax and 18.5% social security come out of this',
+  'Munkáltatói szocho': 'Employer social tax',
+  'a szalon 13%-a a bruttóra': 'the salon’s 13% on gross pay',
+  'SZJA és TB': 'Income tax and social security',
+  'Szalon haszna': 'Salon profit',
+  'a maradék a szocho és a szalonköltség után':
+    'the leftover after employer social tax and salon costs',
+  'nem a nettó 50-50: a százalék a bruttót osztja, a szochót a szalon fizeti':
+    'not a 50-50 split of take-home: the percent splits gross, and the salon pays the employer tax',
+  'Százalékos munkatársnál a termelés maradéka a szocho és a szalonköltség után.':
+    'For percentage coworkers this is leftover production after employer social tax and salon costs.',
+  'A visz haza nettó. A bruttóból a munkatárs fizeti a 15% SZJA-t és a 18,5% TB-t. A szalon külön fizeti a 13% szochót. Az SZJA és TB nem szalonköltség, a szocho igen. Ha a munkatárs vállalkozóként számláz, ne ezt a módot használd.':
+    'Take-home is net. The coworker pays 15% income tax and 18.5% social security from gross. The salon pays 13% employer social tax separately. Income tax and social security are not a salon cost; the employer tax is. If the coworker invoices as self-employed, do not use this mode.',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékokkal és a szalonköltséggel együtt.':
+    'This is the revenue needed to cover the share, wage charges and salon costs.',
+  'A vendégforgalomból ennyi a munkatársé. A szalon a maradékból fizeti a költségeket és a 13%-os szochót.':
+    'This share of guest revenue goes to the coworker. The salon pays costs and the 13% social tax from the rest.',
+  'Ennél a részesedésnél a járulékkal már nem jön ki a szalon. Csökkentsd a százalékot.':
+    'At this share the salon cannot cover contributions. Lower the percentage.',
+  'Havi termelés, ami kell': 'Monthly production needed',
+  'anyag nélkül, a részesedéssel, a járulékokkal és a szalonköltséggel együtt':
+    'without materials, covering the share, wage charges and salon costs',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékkal és a szalonköltséggel együtt.':
+    'This is the revenue needed to cover the share, contributions and salon costs.',
+  'a szalon 13%-os szochója': 'the salon’s 13% social tax',
+  'A munkatárs Haszon a munkatárson sorából jön. Üresen a tervezett haszon nulla.':
+    'This comes from the coworker’s Profit on coworker row. Left empty, planned profit is zero.',
   'Munkatárs visz haza': 'Coworker take-home',
   'A te kártyádra megy': 'Goes to your card',
-  'Visszaszámolt óradíj': 'Hourly rate from production',
-  'a havi termelésből': 'from monthly production',
+  'a havi termelésből': 'of monthly production',
   'Szalon havi szükséglete': 'Salon monthly requirement',
   'Havi egyenleg': 'Monthly balance',
   'ennyi marad a költségek után': 'left after salon costs',
   'a szalon költségénél kevesebb marad': 'less remains than the salon needs',
-  'Add meg a munkatárs havi termelését és a munkaidejét, hogy legyen óradíj.':
-    'Enter the coworker’s monthly production and working hours to get an hourly rate.',
-  'Százalékos munkatársnál ide jön a termelés maradéka, a költségek után.':
-    'For percentage coworkers, the leftover production after costs appears here.',
   'ezt kell a vendégnek fizetnie az óráért': 'this is what the guest needs to pay per hour',
   'A mostani árban általában már benne van a sampon, pakolás és a styling. Ha az anyag is drágult, az új anyagárat is írd be. Az ajánlott ár az óradíj × idő plusz az új anyag.':
     'The current price usually already includes shampoo, treatment and styling. If materials also went up, enter the new material price too. The recommended price is hourly rate × time plus the new materials.',
@@ -226,11 +286,27 @@ const englishTranslations: Record<string, string> = {
   'év': 'years',
   'Élő kalkuláció': 'Live calculation',
   'Élő számítás': 'Live calculation',
+  'Működés és adatok': 'How it works',
+  'Tervezés, helyi mentés, nincs süti.': 'Planning only, saved locally, no cookies.',
   'Éves beruházási alap': 'Annual investment fund',
   'Éves beruházási tartalék': 'Annual investment reserve',
   'Éves költség / fő': 'Annual cost / person',
   'Éves összes': 'Annual total',
   'Éves szalonköltség / fő': 'Annual salon cost / person',
+  'Szalonköltség fedezete': 'Who covers salon costs',
+  'Óradíj viseli': 'Hourly rate',
+  'Haszon viseli': 'Profit',
+  'Magyarázat': 'Explanation',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Every calculator uses figures without materials. Add material cost separately in the guest price.',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Ez a minimum a nettó célbérhez. Ami efelett van, {share} arányban oszlik.':
+    'Every calculator uses figures without materials. This is the minimum for the net wage target. Anything above that splits {share}.',
+  'Az óradíj nő a szalonrész miatt. A visz haza a célnál marad, a plusz a szaloné.':
+    'The guest rate rises by the salon share. Take-home stays at the target; the extra goes to the salon.',
+  'A kitermelendő óradíj marad, a tulaj haszna csökken.':
+    'The required rate stays; owner profit on this coworker falls.',
+  'Százalékos rendszerben a rá eső szalonrészt vagy a vendég óradíja termeli ki, vagy a szalon haszna viseli.':
+    'In a percentage split, this person’s salon share is either earned in the guest rate or taken from salon profit.',
   'Éves szükséglet': 'Annual requirement',
   'Éves teljes költség': 'Total annual cost',
   'Fejlesztési alap': 'Development fund',
@@ -274,8 +350,32 @@ const englishTranslations: Record<string, string> = {
   'Egyéb': 'Other',
   'Havi KATA': 'Monthly KATA',
   '50.000 Ft': 'HUF 50,000',
-  'Főállású katásként havonta 50.000 Ft, és kész. Az iparűzési adót a költségek között külön írd. A Járulék sort hagyd üresen, ha nincs más járulékod.':
-    'For full-time KATA this is HUF 50,000 a month. Enter local business tax among the costs. Leave Contributions empty unless you have other charges.',
+  'Főállású katásként havonta 50.000 Ft, és kész. A kiszámolt adó és az iparűzési adó a tábla zárolt soraiba kerül.':
+    'For full-time KATA this is HUF 50,000 a month. Calculated tax and local business tax appear as locked rows in the table.',
+  'Főállású katásként havonta 50.000 Ft. Az Adó sorban jelenik meg.':
+    'For full-time KATA this is HUF 50,000 a month. It appears in the Tax row.',
+  'A 0–2% és az egyszerűsített vagy normál az iparűzési adóra vonatkozik.':
+    'The 0–2% and simplified or standard options apply to local business tax.',
+  'Iparűzési adó kulcsa': 'Local business tax rate',
+  'HIPA adóalap': 'HIPA tax base',
+  'Egyszerűsített': 'Simplified',
+  'Normál': 'Standard',
+  'A településed 0–2%-ot vet ki a bevételre. Sok helyen 2%. Tervezés, nem hivatalos bevallás.':
+    'Your municipality charges 0–2% of the tax base. Many places use 2%. Overhead only, no materials. This is for planning, not a tax return.',
+  'A településed 0–2%-ot vet ki az adóalapra. Sok helyen 2%. Anyag nélkül, tervezés, nem hivatalos bevallás.':
+    'Your municipality charges 0–2% of the tax base. Many places use 2%. Overhead only, no materials. This is for planning, not a tax return.',
+  '12 millió alatti sáv · 2,5 millió Ft adóalap':
+    'Band under HUF 12 million · HUF 2.5 million tax base',
+  '12–18 millió sáv · 6 millió Ft adóalap':
+    'HUF 12–18 million band · HUF 6 million tax base',
+  '18–25 millió sáv · 8,5 millió Ft adóalap':
+    'HUF 18–25 million band · HUF 8.5 million tax base',
+  '25 millió felett a normál adóalap jár, a rezsibevel után':
+    'Over HUF 25 million the standard base applies, on overhead revenue',
+  'Normál adóalap, a rezsibevel után':
+    'Standard tax base, on overhead revenue',
+  'Ha a szalon közös költségében már szerepel az iparűzési adó, hagyd 0%-on.':
+    'If local business tax is already in the shared salon costs, leave this at 0%.',
   'Költséghányad': 'Cost ratio',
   'Az átalányjövedelem 2026-ban évi 1.936.800 Ft-ig SZJA-mentes, főállásban és mellékállásban is. Mellékállásban (heti 36 órás munka vagy nappali suli) eddig a bevételig TB és szocho sem kell. Főállásban a minimum járulék ettől függetlenül megvan. Ez tervezés, nem hivatalos bevallás.':
     'In 2026, flat-rate income is PIT-free up to HUF 1,936,800 a year, whether this is your main or side activity. With a side activity (36+ hours of employment or full-time study) social charges are also zero up to that revenue. In a main activity the minimum contributions still apply. This is for planning, not a tax return.',
@@ -289,12 +389,20 @@ const englishTranslations: Record<string, string> = {
     'Hairdressers and beauticians usually use the skilled-wage base.',
   'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
     'Hairdressing and beauty care are usually 80% if that is your only activity. Any other activity makes the whole year 45%. 90% is for retail.',
-  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
-    'The cost ratio only splits revenue for tax. It is not an extra expense; Monthly expenses stay what you entered.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, nem kell beírni a táblába.':
+    'The cost ratio only splits revenue for tax. It is not an extra expense and does not go into the table.',
   'Kitermelendő havi bevétel': 'Required monthly revenue',
+  'Ez a tiszta béred és a többi költség plusz az adó. Külön havi forgalmat nem kell beírni.':
+    'This is take-home pay plus your other costs plus tax. You do not enter monthly turnover separately.',
+  'Ez a tiszta béred és a többi költség plusz az adó és az iparűzési adó. Külön havi forgalmat nem kell beírni.':
+    'This is take-home pay plus your other costs plus tax and local business tax. You do not enter monthly turnover separately.',
   'Ebből költséghányad, nem valós kiadás': 'Of which cost ratio, not a real expense',
   'Ebből átalányjövedelem': 'Of which flat-rate income',
-  'csak a beírt költségek, adó nélkül': 'entered costs only, excluding tax',
+  'Adó': 'Tax',
+  'A kalkulátorból jön, nem kell a Járulékba beírni.':
+    'Comes from the calculator; do not enter it under Contributions.',
+  'A kalkulátorból jön, nem kell külön beírni.':
+    'Comes from the calculator; you do not enter it separately.',
   'fodrász': 'hairdresser',
   'Havi adó': 'Monthly tax',
   'Adómentes havi bevétel': 'Tax-free monthly revenue',
@@ -304,8 +412,10 @@ const englishTranslations: Record<string, string> = {
   '25 év alattiak kedvezménye': 'Under-25 tax relief',
   '25 év alatt': 'Under 25',
   '25 betöltötte': '25 or older',
-  '25 év alatt SZJA nélkül, havi bevétel':
-    'Monthly revenue with no PIT under 25',
+  '25 év alatt extra SZJA-mentes jövedelem':
+    'Extra PIT-free income under 25',
+  'Átalányadózóként is jár. A fenti adómentes sáv fölött ennyi átalányjövedelemig az SZJA 0 Ft. A TB és a szocho ettől nem esik le.':
+    'Flat-rate traders get this too. Above the tax-free band, PIT stays HUF 0 on this much deemed income. Social charges are not removed.',
   'Mellékállásban a kisebb határig minden közteher 0 Ft. A 25 év alattiak kedvezménye fölötte csak az SZJA-t viszi le, a TB és a szocho megmarad.':
     'As a side activity every levy is HUF 0 up to the lower limit. Above that, the under-25 relief removes PIT only; social charges still apply.',
   'Főállásban 25 év alatt is fizetni kell a minimum TB-t és szochót. Az SZJA a kedvezmény keretéig 0 Ft.':
@@ -432,8 +542,43 @@ const englishTranslations: Record<string, string> = {
   'Weboldal és domain': 'Website and domain',
   'Zene- és egyéb jogdíjak': 'Music and other royalties',
   'Zsebben marad': 'Take-home income',
+  Székbérlet: 'Chair rental',
+  'Havi székbérlet': 'Monthly chair rental',
+  'Havi összes bevétel': 'Total monthly revenue',
+  'Plusz bevétel': 'Extra revenue',
+  'Több szék esetén add össze. Nem számít bele a saját órabéredbe.':
+    'Add up multiple chairs. This is extra and does not change your own hourly rate.',
+  'Saját termelés, székbérlet és haszon a munkatársakon.':
+    'Your own production, chair rental and profit from coworkers.',
+  'csak a bérleti díj, plusz tétel': 'rental fee only, extra item',
+  'Új bevételi sor': 'Add extra income row',
+  'Bevétel megnevezése': 'Income name',
+  'Bevétel gyakorisága': 'Income frequency',
+  'Bevétel összege': 'Income amount',
+  'Saját termelés és plusz bevétel.': 'Your own production and extra income.',
+  'Nem számít bele a saját órabéredbe.': 'This does not change your own hourly rate.',
   'Cseh korona': 'Czech koruna',
   'Euro': 'Euro',
+  'Üdvözlünk': 'Welcome',
+  'Szalon pénzügyi tervező': 'Salon financial planner',
+  'Tovább': 'Continue',
+  'Tovább a kalkulátorhoz': 'Continue to the calculator',
+  'Bezárás': 'Close',
+  'Belépőkód': 'Access code',
+  'Belépés': 'Enter',
+  'Nincs fiók és belépés. Írd be a kódot a folytatáshoz.':
+    'There is no account and no sign-in. Enter the code to continue.',
+  'Ez a kód nem jó.': 'That code is not right.',
+  'Figyelem': 'Please note',
+  'Anyag nélkül számolunk': 'We calculate without materials',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik.':
+    'Every calculator uses figures without materials.',
+  'Az óradíj, a költség és a termelés nem tartalmazza a vendéghez felhasznált anyagot. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Hourly rates, costs and production do not include products used on the guest. Add material cost separately in the guest price.',
+  'Ez egy tervező kalkulátor. Segít óradíjat, költséget és áremelést számolni. Az eredmény tájékoztató, nem helyettesíti a könyvelőt, az adótanácsadót és a hivatalos bevallást.':
+    'This is a planning calculator. It helps you work out hourly rates, costs and price increases. The result is indicative and does not replace an accountant, a tax adviser or an official tax return.',
+  'A megadott számok csak a böngésződben, ezen a készüléken maradnak. Nincs fiók, sütit nem használunk, adatot nem küldünk el. A helyi mentés a működéshez kell, hogy ne vesszenek el a beírásaid.':
+    'The figures you enter stay in your browser, on this device. There is no account, we do not use cookies, and nothing is sent to a server. Local saving is needed for the calculator to keep your entries.',
 }
 
 const czechTranslations: Record<string, string> = {
@@ -465,45 +610,103 @@ const czechTranslations: Record<string, string> = {
   'Ajánlott ár': 'Doporučená cena',
   'A fodrász részesedése': 'Podíl kadeřníka',
   'A naptár hány százaléka van tényleg tele.': 'Jak plný kalendář ve skutečnosti je.',
-  'A százalék a teljes vendégárból számolódik.':
-    'Procento se počítá z celé ceny pro hosta.',
-  'A százalék a vendégárból az anyag után számolódik.':
-    'Procento se počítá z ceny pro hosta po odečtení materiálu.',
-  'A vendégárból ennyi marad a munkatársnál.':
-    'Toto je podíl kolegy z ceny pro hosta.',
-  'Anyag levonása előbb': 'Nejprve odečíst materiál',
-  'a teljes vendégárból': 'z celé ceny pro hosta',
-  'anyag után a vendégárból': 'z ceny pro hosta po materiálu',
+  '100% = minden óra ki van töltve. Ha lejjebb húzod, az óradíj nő, mert ugyanazt kevesebb vendégórából kell kitermelni.':
+    '100 % znamená, že je každá hodina obsazená. Posunutím dolů hodinová sazba stoupne, protože stejnou částku musíte vytěžit z méně hodin u zákazníků.',
+  'Átlagos szolgáltatás': 'Průměrná služba',
+  'Heti vendég': 'Hostů týdně',
+  'átlagos időtartammal': 'při průměrné délce',
+  'az árlista átlagos idejével': 'z průměrné délky v ceníku',
+  'Add meg az árlistán a szolgáltatások idejét.':
+    'Zadejte délky služeb v ceníku.',
+  'vendég / hét': 'hostů / týden',
+  'ebből adó és HIPA': 'z toho daň a HIPA',
   'Az ajánlott ár a vendégnek mutatott, felfelé kerekített összeg. Alatta a pontos számolt érték látszik, ha eltér.':
     'Doporučená cena je částka pro hosta, zaokrouhlená nahoru. Přesná spočítaná hodnota se zobrazí pod ní, pokud se liší.',
+  'Az áremelés tervező {percent}%-ot javasol':
+    'Plánovač úpravy cen navrhuje {percent} %',
+  'Alkalmazza az összes árra': 'Použít na všechny ceny',
+  'A vendégárakra megy. Az anyagot külön nem szorozza. Kikapcsolva visszaáll a pipa előtti ár.':
+    'Upraví ceny pro hosty. Materiál zvlášť nenásobí. Vypnutím se obnoví ceny před zaškrtnutím.',
+  'Töltsd ki az áremelés tervezőt, ha a változást az összes árra rátennéd.':
+    'Vyplňte plánovač úpravy cen, pokud chcete změnu dát na všechny ceny.',
+  'emelés után': 'po zvýšení',
+  'éves emelés alkalmazva': 'roční zvýšení použito',
   'Bérezés módja': 'Způsob odměny',
   'Elszámolás': 'Vyúčtování',
   'Fix bér': 'Pevná mzda',
   'Járulék és juttatások': 'Odvody a benefity',
+  'A részesedést bruttó bérnek vesszük. A szalon szochója 2026-ban 13%, ez a Járulék sor. Ha a munkatárs vállalkozóként számláz, ne a százalékos alkalmazotti módot használd.':
+    'Podíl se bere jako hrubá mzda. Sociální daň salonu je v roce 2026 13 %; to je řádek Odvody. Pokud kolega fakturuje jako OSVČ, procentní režim zaměstnance nepoužívejte.',
   'Kihasználtság': 'Obsazenost',
   'kihasználtsággal': 'obsazeností',
   'Munkatárs részesedése': 'Podíl kolegy',
   'számolt': 'spočítáno',
   'Százalékos rendszer': 'Procentuální systém',
-  'Átlagos havi termelés': 'Průměrná měsíční produkce',
-  'A munkatárs havi vendégforgalma. Ebből megy a százalék, a maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg. Az óradíjat a termelésből számoljuk vissza.':
-    'Měsíční tržby kolegy od hostů. Z toho jde procento; zbytek se objeví u Moje hodinová sazba na kartě Zisk z kolegů. Hodinová sazba se spočítá z produkce.',
-  'A havi termelésből ennyi a munkatársé. A maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg.':
-    'Tento podíl měsíční produkce patří kolegovi. Zbytek se objeví u Moje hodinová sazba na kartě Zisk z kolegů.',
-  'A százalék az anyag nélküli termelésből számolódik. Az átlagos termelésbe az anyag nélküli forgalmat írd.':
-    'Procento se počítá z produkce po materiálu. Zadejte produkci bez materiálu.',
+  'A részesedés megmondja, hogyan oszlik a vendégforgalom. A kalkulátor kiszámolja, mekkora óradíj kell a szalonköltséghez és a járulékhoz.':
+    'Podíl říká, jak se dělí tržby od hostů. Kalkulačka spočítá hodinovou sazbu potřebnou na náklady salonu a odvody.',
+  'Add meg, mennyit vigyen haza legalább, és hány százalékot kap a termelésből. Az óradíj addig nő, amíg a bér, a járulék és a szalonköltség is megvan.':
+    'Zadejte, kolik si má kolega minimálně odnést, a kolik procent z produkce dostane. Hodinová sazba stoupá, dokud není pokrytá mzda, odvody i náklady salonu.',
+  'Legalább ennyit visz haza': 'Minimálně si odnese',
+  'Ha üres, csak a szalonköltségből számolunk. Ha beírod, az óradíj addig nő, amíg ez a bér megvan.':
+    'Pokud je prázdné, počítáme jen z nákladů salonu. Když částku zadáte, hodinová sazba stoupne, dokud tato mzda není splněná.',
+  'a megadott célbér': 'zadaná cílová mzda',
+  'több a célbérnél, mert a szalonköltség többet kíván':
+    'víc než cílová mzda, protože náklady salonu vyžadují víc',
+  'A visz haza nettó. A százalék a bruttó felosztás. A szalon haszna a maradék, nem kell külön sort kitölteni.':
+    'Odnesená částka je netto. Procento dělí hrubou produkci. Zisk salonu je zbytek; zvlášť řádek zisku se nevyplňuje.',
+  'Zsebben maradó nettó. Az óradíj addig nő, amíg ez megvan a SZJA, TB és szocho mellett.':
+    'Netto do kapsy. Hodinová sazba stoupá, dokud toto zbude po dani, sociálním pojištění a sociální dani zaměstnavatele.',
+  'Papíros munkaidő': 'Úvazek na papíře',
+  '4 óra': '4 hodiny',
+  '6 óra': '6 hodin',
+  '8 óra': '8 hodin',
+  'A papíros óraszám a TB- és szocho-minimumot arányosítja a minimálbérhez. Az óradíj a fenti munkaidőből jön.':
+    'Úvazek na papíře poměrně snižuje minimum sociálního pojištění a daně zaměstnavatele k minimální mzdě. Hodinová sazba se bere z pracovní doby výše.',
+  'A 25 év alatti és a családi kedvezmény a munkatárs nettójához jön pluszban. A célbér kedvezmény nélkül értendő.':
+    'Sleva do 25 let a rodinná sleva jdou navíc kolegovi k nettu. Cílová mzda je bez těchto slev.',
+  'a kedvezmény pluszban a munkatársé, nem a szaloné':
+    'sleva zůstává kolegovi, ne salonu',
+  'járulékminimum a papíros óraszám szerint':
+    'minimum odvodů podle úvazku na papíře',
+  '25 év alatt az SZJA a mentességi plafonig 0':
+    'do 25 let je daň 0 až do stropu osvobození',
+  'nettó, SZJA és TB után': 'netto, po dani a sociálním pojištění',
+  'Bruttó bér': 'Hrubá mzda',
+  'ebből megy a 15% SZJA és a 18,5% TB':
+    'z toho jde 15 % daň a 18,5 % sociální pojištění',
+  'Munkáltatói szocho': 'Sociální daň zaměstnavatele',
+  'a szalon 13%-a a bruttóra': '13 % salonu z hrubé mzdy',
+  'SZJA és TB': 'Daň a sociální pojištění',
+  'Szalon haszna': 'Zisk salonu',
+  'a maradék a szocho és a szalonköltség után':
+    'zbytek po sociální dani zaměstnavatele a nákladech salonu',
+  'nem a nettó 50-50: a százalék a bruttót osztja, a szochót a szalon fizeti':
+    'není to 50-50 z netto: procento dělí hrubou produkci a salon platí daň zaměstnavatele',
+  'Százalékos munkatársnál a termelés maradéka a szocho és a szalonköltség után.':
+    'U kolegů na procenta je to zbytek produkce po sociální dani zaměstnavatele a nákladech salonu.',
+  'A visz haza nettó. A bruttóból a munkatárs fizeti a 15% SZJA-t és a 18,5% TB-t. A szalon külön fizeti a 13% szochót. Az SZJA és TB nem szalonköltség, a szocho igen. Ha a munkatárs vállalkozóként számláz, ne ezt a módot használd.':
+    'Odnesená částka je netto. Kolega platí z hrubé mzdy 15 % daň a 18,5 % sociální pojištění. Salon zvlášť platí 13 % sociální daň zaměstnavatele. Daň a pojištění kolegy nejsou nákladem salonu, daň zaměstnavatele ano. Pokud kolega fakturuje jako OSVČ, tento režim nepoužívejte.',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékokkal és a szalonköltséggel együtt.':
+    'Tento obrat je potřeba na podíl, odvody i náklady salonu.',
+  'A vendégforgalomból ennyi a munkatársé. A szalon a maradékból fizeti a költségeket és a 13%-os szochót.':
+    'Tento podíl tržeb patří kolegovi. Salon z zbytku platí náklady a 13% sociální daň.',
+  'Ennél a részesedésnél a járulékkal már nem jön ki a szalon. Csökkentsd a százalékot.':
+    'Při tomto podílu salon nezvládne odvody. Snižte procento.',
+  'Havi termelés, ami kell': 'Potřebná měsíční produkce',
+  'anyag nélkül, a részesedéssel, a járulékokkal és a szalonköltséggel együtt':
+    'bez materiálu, na podíl, odvody i náklady salonu',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékkal és a szalonköltséggel együtt.':
+    'Tento obrat je potřeba na podíl, odvody i náklady salonu.',
+  'a szalon 13%-os szochója': '13% sociální daň salonu',
+  'A munkatárs Haszon a munkatárson sorából jön. Üresen a tervezett haszon nulla.':
+    'Bere se z řádku Zisk na kolegovi. Pokud je prázdný, plánovaný zisk je nula.',
   'Munkatárs visz haza': 'Kolega si odnese',
   'A te kártyádra megy': 'Jde na vaši kartu',
-  'Visszaszámolt óradíj': 'Hodinová sazba z produkce',
   'a havi termelésből': 'z měsíční produkce',
   'Szalon havi szükséglete': 'Měsíční potřeba salonu',
   'Havi egyenleg': 'Měsíční zůstatek',
   'ennyi marad a költségek után': 'zbývá po nákladech salonu',
   'a szalon költségénél kevesebb marad': 'zbývá méně, než salon potřebuje',
-  'Add meg a munkatárs havi termelését és a munkaidejét, hogy legyen óradíj.':
-    'Zadejte měsíční produkci kolegy a pracovní dobu, aby byla hodinová sazba.',
-  'Százalékos munkatársnál ide jön a termelés maradéka, a költségek után.':
-    'U kolegů na procenta se sem dostane zbytek produkce po nákladech.',
   'ezt kell a vendégnek fizetnie az óráért': 'toto musí host zaplatit za hodinu',
   'A mostani árban általában már benne van a sampon, pakolás és a styling. Ha az anyag is drágult, az új anyagárat is írd be. Az ajánlott ár az óradíj × idő plusz az új anyag.':
     'Současná cena obvykle už obsahuje šampon, kúru a styling. Pokud zdražil i materiál, zadejte i novou cenu materiálu. Doporučená cena je hodinová sazba × čas plus nový materiál.',
@@ -571,11 +774,27 @@ const czechTranslations: Record<string, string> = {
   'év': 'roky',
   'Élő kalkuláció': 'Živý výpočet',
   'Élő számítás': 'Živý výpočet',
+  'Működés és adatok': 'Jak to funguje',
+  'Tervezés, helyi mentés, nincs süti.': 'Jen plánování, uloženo lokálně, bez cookies.',
   'Éves beruházási alap': 'Roční investiční fond',
   'Éves beruházási tartalék': 'Roční investiční rezerva',
   'Éves költség / fő': 'Roční náklad / osoba',
   'Éves összes': 'Roční součet',
   'Éves szalonköltség / fő': 'Roční náklady salonu / osoba',
+  'Szalonköltség fedezete': 'Kdo pokryje náklady salonu',
+  'Óradíj viseli': 'Hodinová sazba',
+  'Haszon viseli': 'Zisk',
+  'Magyarázat': 'Vysvětlení',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Každá kalkulačka počítá bez materiálu. Náklady na materiál přidejte zvlášť do ceny pro hosta.',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Ez a minimum a nettó célbérhez. Ami efelett van, {share} arányban oszlik.':
+    'Každá kalkulačka počítá bez materiálu. Toto je minimum k čisté cílové mzdě. Cokoli nad to se dělí {share}.',
+  'Az óradíj nő a szalonrész miatt. A visz haza a célnál marad, a plusz a szaloné.':
+    'Hosté zaplatí víc o podíl salonu. Výplata kolegy zůstane na cíli, navíc jde salonu.',
+  'A kitermelendő óradíj marad, a tulaj haszna csökken.':
+    'Požadovaná sazba zůstane, zisk majitele klesne.',
+  'Százalékos rendszerben a rá eső szalonrészt vagy a vendég óradíja termeli ki, vagy a szalon haszna viseli.':
+    'U procentuálního podílu se podíl na nákladech salonu buď vydělá v sazbě, nebo jde ze zisku salonu.',
   'Éves szükséglet': 'Roční potřeba',
   'Éves teljes költség': 'Celkové roční náklady',
   'Fejlesztési alap': 'Rozvojový fond',
@@ -619,8 +838,32 @@ const czechTranslations: Record<string, string> = {
   'Egyéb': 'Jiné',
   'Havi KATA': 'Měsíční KATA',
   '50.000 Ft': '50 000 Ft',
-  'Főállású katásként havonta 50.000 Ft, és kész. Az iparűzési adót a költségek között külön írd. A Járulék sort hagyd üresen, ha nincs más járulékod.':
-    'U hlavní KATA je to 50 000 Ft měsíčně. Místní daň zadejte mezi náklady. Položku Příspěvky nechte prázdnou, pokud nemáte jiné odvody.',
+  'Főállású katásként havonta 50.000 Ft, és kész. A kiszámolt adó és az iparűzési adó a tábla zárolt soraiba kerül.':
+    'U hlavní KATA je to 50 000 Ft měsíčně. Vypočtená daň a místní podnikatelská daň se objeví jako uzamčené řádky v tabulce.',
+  'Főállású katásként havonta 50.000 Ft. Az Adó sorban jelenik meg.':
+    'U hlavní KATA je to 50 000 Ft měsíčně. Objeví se v řádku Daň.',
+  'A 0–2% és az egyszerűsített vagy normál az iparűzési adóra vonatkozik.':
+    '0–2 % a zjednodušený nebo běžný základ se týkají místní podnikatelské daně.',
+  'Iparűzési adó kulcsa': 'Sazba místní podnikatelské daně',
+  'HIPA adóalap': 'Základ HIPA',
+  'Egyszerűsített': 'Zjednodušený',
+  'Normál': 'Běžný',
+  'A településed 0–2%-ot vet ki a bevételre. Sok helyen 2%. Tervezés, nem hivatalos bevallás.':
+    'Obec vybírá 0–2 % ze základu daně. Často je to 2 %. Jen režie, bez materiálu. Jde o plánování, ne o daňové přiznání.',
+  'A településed 0–2%-ot vet ki az adóalapra. Sok helyen 2%. Anyag nélkül, tervezés, nem hivatalos bevallás.':
+    'Obec vybírá 0–2 % ze základu daně. Často je to 2 %. Jen režie, bez materiálu. Jde o plánování, ne o daňové přiznání.',
+  '12 millió alatti sáv · 2,5 millió Ft adóalap':
+    'Pásmo pod 12 milionů Ft · základ 2,5 milionu Ft',
+  '12–18 millió sáv · 6 millió Ft adóalap':
+    'Pásmo 12–18 milionů Ft · základ 6 milionů Ft',
+  '18–25 millió sáv · 8,5 millió Ft adóalap':
+    'Pásmo 18–25 milionů Ft · základ 8,5 milionu Ft',
+  '25 millió felett a normál adóalap jár, a rezsibevel után':
+    'Nad 25 milionů Ft platí běžný základ z režijního obratu',
+  'Normál adóalap, a rezsibevel után':
+    'Běžný základ z režijního obratu',
+  'Ha a szalon közös költségében már szerepel az iparűzési adó, hagyd 0%-on.':
+    'Pokud je místní daň už ve společných nákladech salonu, nechte 0 %.',
   'Költséghányad': 'Nákladový poměr',
   'Az átalányjövedelem 2026-ban évi 1.936.800 Ft-ig SZJA-mentes, főállásban és mellékállásban is. Mellékállásban (heti 36 órás munka vagy nappali suli) eddig a bevételig TB és szocho sem kell. Főállásban a minimum járulék ettől függetlenül megvan. Ez tervezés, nem hivatalos bevallás.':
     'Paušální příjem je v roce 2026 osvobozen od daně z příjmu do 1 936 800 Ft ročně, v hlavní i vedlejší činnosti. Ve vedlejší činnosti (36+ hodin zaměstnání nebo denní studium) do tohoto obratu neplatíte ani odvody. V hlavní činnosti minimální odvody platí i tak. Jde o plánování, ne o daňové přiznání.',
@@ -634,12 +877,20 @@ const czechTranslations: Record<string, string> = {
     'Kadeřník a kosmetička obvykle používají zaručenou mzdu.',
   'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
     'Kadeřnictví a péče o krásu jsou obvykle 80 %, pokud z toho máte jediný příjem. Jiná činnost znamená 45 % za celý rok. 90 % platí pro maloobchod.',
-  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
-    'Nákladový poměr jen rozděluje obrat pro daň. Není to další výdaj; Měsíční výdaje zůstanou tím, co jste zadali.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, nem kell beírni a táblába.':
+    'Nákladový poměr jen rozděluje obrat pro daň. Není to další výdaj a do tabulky se nezadává.',
   'Kitermelendő havi bevétel': 'Potřebný měsíční obrat',
+  'Ez a tiszta béred és a többi költség plusz az adó. Külön havi forgalmat nem kell beírni.':
+    'Je to čistá mzda plus ostatní náklady plus daň. Měsíční obrat zvlášť nezadáváte.',
+  'Ez a tiszta béred és a többi költség plusz az adó és az iparűzési adó. Külön havi forgalmat nem kell beírni.':
+    'Je to čistá mzda plus ostatní náklady plus daň a místní podnikatelská daň. Měsíční obrat zvlášť nezadáváte.',
   'Ebből költséghányad, nem valós kiadás': 'Z toho nákladový poměr, ne skutečný výdaj',
   'Ebből átalányjövedelem': 'Z toho paušální příjem',
-  'csak a beírt költségek, adó nélkül': 'jen zadané náklady, bez daně',
+  'Adó': 'Daň',
+  'A kalkulátorból jön, nem kell a Járulékba beírni.':
+    'Pochází z kalkulačky; do položky Příspěvky ji nezadávejte.',
+  'A kalkulátorból jön, nem kell külön beírni.':
+    'Pochází z kalkulačky; zvlášť ji nezadáváte.',
   'fodrász': 'kadeřník',
   'Havi adó': 'Měsíční daň',
   'Adómentes havi bevétel': 'Měsíční obrat bez daně',
@@ -649,8 +900,10 @@ const czechTranslations: Record<string, string> = {
   '25 év alattiak kedvezménye': 'Úleva do 25 let',
   '25 év alatt': 'Do 25 let',
   '25 betöltötte': '25 a více',
-  '25 év alatt SZJA nélkül, havi bevétel':
-    'Měsíční obrat bez daně z příjmu do 25 let',
+  '25 év alatt extra SZJA-mentes jövedelem':
+    'Dodatečný příjem bez daně z příjmu do 25 let',
+  'Átalányadózóként is jár. A fenti adómentes sáv fölött ennyi átalányjövedelemig az SZJA 0 Ft. A TB és a szocho ettől nem esik le.':
+    'Platí i u paušální daně. Nad osvobozeným pásmem je daň z příjmu 0 Ft z tohoto paušálního příjmu. Odvody se tím nesníží.',
   'Mellékállásban a kisebb határig minden közteher 0 Ft. A 25 év alattiak kedvezménye fölötte csak az SZJA-t viszi le, a TB és a szocho megmarad.':
     'Ve vedlejší činnosti je do nižší hranice vše 0 Ft. Úleva do 25 let nad to ruší jen daň z příjmu, odvody zůstávají.',
   'Főállásban 25 év alatt is fizetni kell a minimum TB-t és szochót. Az SZJA a kedvezmény keretéig 0 Ft.':
@@ -779,8 +1032,43 @@ const czechTranslations: Record<string, string> = {
   'Weboldal és domain': 'Web a doména',
   'Zene- és egyéb jogdíjak': 'Hudební a další autorské poplatky',
   'Zsebben marad': 'Zbude v kapse',
+  Székbérlet: 'Pronájem křesla',
+  'Havi székbérlet': 'Měsíční pronájem křesla',
+  'Havi összes bevétel': 'Celkové měsíční tržby',
+  'Plusz bevétel': 'Další příjem',
+  'Több szék esetén add össze. Nem számít bele a saját órabéredbe.':
+    'U více křesel částky sečtěte. Je to navíc a vaši hodinovou sazbu nemění.',
+  'Saját termelés, székbérlet és haszon a munkatársakon.':
+    'Vlastní produkce, pronájem křesla a zisk z kolegů.',
+  'csak a bérleti díj, plusz tétel': 'jen nájemné, položka navíc',
+  'Új bevételi sor': 'Přidat další příjem',
+  'Bevétel megnevezése': 'Název příjmu',
+  'Bevétel gyakorisága': 'Četnost příjmu',
+  'Bevétel összege': 'Částka příjmu',
+  'Saját termelés és plusz bevétel.': 'Vlastní produkce a další příjem.',
+  'Nem számít bele a saját órabéredbe.': 'Vaši hodinovou sazbu to nemění.',
   'Cseh korona': 'Česká koruna',
   'Euro': 'Euro',
+  'Üdvözlünk': 'Vítejte',
+  'Szalon pénzügyi tervező': 'Finanční plánovač salonu',
+  'Tovább': 'Pokračovat',
+  'Tovább a kalkulátorhoz': 'Pokračovat do kalkulačky',
+  'Bezárás': 'Zavřít',
+  'Belépőkód': 'Přístupový kód',
+  'Belépés': 'Vstoupit',
+  'Nincs fiók és belépés. Írd be a kódot a folytatáshoz.':
+    'Žádný účet ani přihlášení. Pro pokračování zadejte kód.',
+  'Ez a kód nem jó.': 'Tento kód není správný.',
+  'Figyelem': 'Pozor',
+  'Anyag nélkül számolunk': 'Počítáme bez materiálu',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik.':
+    'Každá kalkulačka počítá bez materiálu.',
+  'Az óradíj, a költség és a termelés nem tartalmazza a vendéghez felhasznált anyagot. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Hodinová sazba, náklady i produkce nezahrnují spotřebovaný materiál. Náklady na materiál přidejte zvlášť do ceny pro hosta.',
+  'Ez egy tervező kalkulátor. Segít óradíjat, költséget és áremelést számolni. Az eredmény tájékoztató, nem helyettesíti a könyvelőt, az adótanácsadót és a hivatalos bevallást.':
+    'Toto je plánovací kalkulačka. Pomáhá spočítat hodinovou sazbu, náklady a úpravu cen. Výsledek je orientační a nenahrazuje účetního, daňového poradce ani oficiální přiznání.',
+  'A megadott számok csak a böngésződben, ezen a készüléken maradnak. Nincs fiók, sütit nem használunk, adatot nem küldünk el. A helyi mentés a működéshez kell, hogy ne vesszenek el a beírásaid.':
+    'Zadaná čísla zůstávají jen v prohlížeči, na tomto zařízení. Účet není, cookies nepoužíváme a nic se neodesílá na server. Místní uložení je potřeba, aby se zadané údaje neztratily.',
 }
 
 const slovakTranslations: Record<string, string> = {
@@ -812,45 +1100,103 @@ const slovakTranslations: Record<string, string> = {
   'Ajánlott ár': 'Odporúčaná cena',
   'A fodrász részesedése': 'Podiel kaderníka',
   'A naptár hány százaléka van tényleg tele.': 'Ako plný kalendár v skutočnosti je.',
-  'A százalék a teljes vendégárból számolódik.':
-    'Percento sa počíta z celej ceny pre hosťa.',
-  'A százalék a vendégárból az anyag után számolódik.':
-    'Percento sa počíta z ceny pre hosťa po odpočítaní materiálu.',
-  'A vendégárból ennyi marad a munkatársnál.':
-    'Toto je podiel kolegu z ceny pre hosťa.',
-  'Anyag levonása előbb': 'Najprv odpočítať materiál',
-  'a teljes vendégárból': 'z celej ceny pre hosťa',
-  'anyag után a vendégárból': 'z ceny pre hosťa po materiáli',
+  '100% = minden óra ki van töltve. Ha lejjebb húzod, az óradíj nő, mert ugyanazt kevesebb vendégórából kell kitermelni.':
+    '100 % znamená, že je každá hodina obsadená. Posunutím nadol hodinová sadzba stúpne, pretože rovnakú sumu musíte vyťažiť z menej hodín u zákazníkov.',
+  'Átlagos szolgáltatás': 'Priemerná služba',
+  'Heti vendég': 'Hostí týždenne',
+  'átlagos időtartammal': 'pri priemernej dĺžke',
+  'az árlista átlagos idejével': 'z priemernej dĺžky v cenníku',
+  'Add meg az árlistán a szolgáltatások idejét.':
+    'Zadajte dĺžky služieb v cenníku.',
+  'vendég / hét': 'hostí / týždeň',
+  'ebből adó és HIPA': 'z toho daň a HIPA',
   'Az ajánlott ár a vendégnek mutatott, felfelé kerekített összeg. Alatta a pontos számolt érték látszik, ha eltér.':
     'Odporúčaná cena je suma pre hosťa, zaokrúhlená nahor. Presná spočítaná hodnota sa zobrazí pod ňou, ak sa líši.',
+  'Az áremelés tervező {percent}%-ot javasol':
+    'Plánovač úpravy cien navrhuje {percent} %',
+  'Alkalmazza az összes árra': 'Použiť na všetky ceny',
+  'A vendégárakra megy. Az anyagot külön nem szorozza. Kikapcsolva visszaáll a pipa előtti ár.':
+    'Upraví ceny pre hostí. Materiál zvlášť nenásobí. Vypnutím sa obnovia ceny pred zaškrtnutím.',
+  'Töltsd ki az áremelés tervezőt, ha a változást az összes árra rátennéd.':
+    'Vyplňte plánovač úpravy cien, ak chcete zmenu dať na všetky ceny.',
+  'emelés után': 'po zvýšení',
+  'éves emelés alkalmazva': 'ročné zvýšenie použité',
   'Bérezés módja': 'Spôsob odmeny',
   'Elszámolás': 'Vyúčtovanie',
   'Fix bér': 'Pevná mzda',
   'Járulék és juttatások': 'Odvody a benefity',
+  'A részesedést bruttó bérnek vesszük. A szalon szochója 2026-ban 13%, ez a Járulék sor. Ha a munkatárs vállalkozóként számláz, ne a százalékos alkalmazotti módot használd.':
+    'Podiel sa berie ako hrubá mzda. Sociálna daň salónu je v roku 2026 13 %; to je riadok Odvody. Ak kolega fakturuje ako živnostník, percentuálny režim zamestnanca nepoužívajte.',
   'Kihasználtság': 'Obsadenosť',
   'kihasználtsággal': 'obsadenosťou',
   'Munkatárs részesedése': 'Podiel kolegu',
   'számolt': 'spočítané',
   'Százalékos rendszer': 'Percentuálny systém',
-  'Átlagos havi termelés': 'Priemerná mesačná produkcia',
-  'A munkatárs havi vendégforgalma. Ebből megy a százalék, a maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg. Az óradíjat a termelésből számoljuk vissza.':
-    'Mesačné tržby kolegu od hostí. Z toho ide percento; zvyšok sa objaví pri Moja hodinová sadzba na karte Zisk z kolegov. Hodinová sadzba sa spočíta z produkcie.',
-  'A havi termelésből ennyi a munkatársé. A maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg.':
-    'Tento podiel mesačnej produkcie patrí kolegovi. Zvyšok sa objaví pri Moja hodinová sadzba na karte Zisk z kolegov.',
-  'A százalék az anyag nélküli termelésből számolódik. Az átlagos termelésbe az anyag nélküli forgalmat írd.':
-    'Percento sa počíta z produkcie po materiáli. Zadajte produkciu bez materiálu.',
+  'A részesedés megmondja, hogyan oszlik a vendégforgalom. A kalkulátor kiszámolja, mekkora óradíj kell a szalonköltséghez és a járulékhoz.':
+    'Podiel hovorí, ako sa delia tržby od hostí. Kalkulačka spočíta hodinovú sadzbu potrebnú na náklady salónu a odvody.',
+  'Add meg, mennyit vigyen haza legalább, és hány százalékot kap a termelésből. Az óradíj addig nő, amíg a bér, a járulék és a szalonköltség is megvan.':
+    'Zadajte, koľko si má kolega minimálne odnieť, a koľko percent z produkcie dostane. Hodinová sadzba stúpa, kým nie je pokrytá mzda, odvody aj náklady salónu.',
+  'Legalább ennyit visz haza': 'Minimálne si odnesie',
+  'Ha üres, csak a szalonköltségből számolunk. Ha beírod, az óradíj addig nő, amíg ez a bér megvan.':
+    'Ak je prázdne, počítame len z nákladov salónu. Keď sumu zadáte, hodinová sadzba stúpne, kým táto mzda nie je splnená.',
+  'a megadott célbér': 'zadaná cieľová mzda',
+  'több a célbérnél, mert a szalonköltség többet kíván':
+    'viac než cieľová mzda, pretože náklady salónu vyžadujú viac',
+  'A visz haza nettó. A százalék a bruttó felosztás. A szalon haszna a maradék, nem kell külön sort kitölteni.':
+    'Odnesená suma je netto. Percento delí hrubú produkciu. Zisk salónu je zvyšok; zvlášť riadok zisku sa nevyplína.',
+  'Zsebben maradó nettó. Az óradíj addig nő, amíg ez megvan a SZJA, TB és szocho mellett.':
+    'Netto do peňaženky. Hodinová sadzba stúpa, kým toto zostane po dani, sociálnom poistení a sociálnej dani zamestnávateľa.',
+  'Papíros munkaidő': 'Úväzok na papieri',
+  '4 óra': '4 hodiny',
+  '6 óra': '6 hodín',
+  '8 óra': '8 hodín',
+  'A papíros óraszám a TB- és szocho-minimumot arányosítja a minimálbérhez. Az óradíj a fenti munkaidőből jön.':
+    'Úväzok na papieri pomerne znižuje minimum sociálneho poistenia a dane zamestnávateľa k minimálnej mzde. Hodinová sadzba sa berie z pracovného času vyššie.',
+  'A 25 év alatti és a családi kedvezmény a munkatárs nettójához jön pluszban. A célbér kedvezmény nélkül értendő.':
+    'Úľava do 25 rokov a rodinná úľava idú navyše kolegovi k nettu. Cieľová mzda je bez týchto úľav.',
+  'a kedvezmény pluszban a munkatársé, nem a szaloné':
+    'úľava zostáva kolegovi, nie salónu',
+  'járulékminimum a papíros óraszám szerint':
+    'minimum odvodov podľa úväzku na papieri',
+  '25 év alatt az SZJA a mentességi plafonig 0':
+    'do 25 rokov je daň 0 až po strop oslobodenia',
+  'nettó, SZJA és TB után': 'netto, po dani a sociálnom poistení',
+  'Bruttó bér': 'Hrubá mzda',
+  'ebből megy a 15% SZJA és a 18,5% TB':
+    'z toho ide 15 % daň a 18,5 % sociálne poistenie',
+  'Munkáltatói szocho': 'Sociálna daň zamestnávateľa',
+  'a szalon 13%-a a bruttóra': '13 % salónu z hrubej mzdy',
+  'SZJA és TB': 'Daň a sociálne poistenie',
+  'Szalon haszna': 'Zisk salónu',
+  'a maradék a szocho és a szalonköltség után':
+    'zvyšok po sociálnej dani zamestnávateľa a nákladoch salónu',
+  'nem a nettó 50-50: a százalék a bruttót osztja, a szochót a szalon fizeti':
+    'nie je to 50-50 z netto: percento delí hrubú produkciu a salón platí daň zamestnávateľa',
+  'Százalékos munkatársnál a termelés maradéka a szocho és a szalonköltség után.':
+    'Pri kolegoch na percentá je to zvyšok produkcie po sociálnej dani zamestnávateľa a nákladoch salónu.',
+  'A visz haza nettó. A bruttóból a munkatárs fizeti a 15% SZJA-t és a 18,5% TB-t. A szalon külön fizeti a 13% szochót. Az SZJA és TB nem szalonköltség, a szocho igen. Ha a munkatárs vállalkozóként számláz, ne ezt a módot használd.':
+    'Odnesená suma je netto. Kolega platí z hrubej mzdy 15 % daň a 18,5 % sociálne poistenie. Salón zvlášť platí 13 % sociálnu daň zamestnávateľa. Daň a poistenie kolegu nie sú nákladom salónu, daň zamestnávateľa áno. Ak kolega fakturuje ako živnostník, tento režim nepoužívajte.',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékokkal és a szalonköltséggel együtt.':
+    'Tento obrat je potrebný na podiel, odvody aj náklady salónu.',
+  'A vendégforgalomból ennyi a munkatársé. A szalon a maradékból fizeti a költségeket és a 13%-os szochót.':
+    'Tento podiel tržieb patrí kolegovi. Salón zo zvyšku platí náklady a 13% sociálnu daň.',
+  'Ennél a részesedésnél a járulékkal már nem jön ki a szalon. Csökkentsd a százalékot.':
+    'Pri tomto podiele salón nezvládne odvody. Znížte percento.',
+  'Havi termelés, ami kell': 'Potrebná mesačná produkcia',
+  'anyag nélkül, a részesedéssel, a járulékokkal és a szalonköltséggel együtt':
+    'bez materiálu, na podiel, odvody aj náklady salónu',
+  'Ezt a forgalmat kell kitermelni a részesedéssel, a járulékkal és a szalonköltséggel együtt.':
+    'Tento obrat je potrebný na podiel, odvody aj náklady salónu.',
+  'a szalon 13%-os szochója': '13% sociálna daň salónu',
+  'A munkatárs Haszon a munkatárson sorából jön. Üresen a tervezett haszon nulla.':
+    'Berie sa z riadku Zisk na kolegovi. Ak je prázdny, plánovaný zisk je nula.',
   'Munkatárs visz haza': 'Kolega si odnesie',
   'A te kártyádra megy': 'Ide na vašu kartu',
-  'Visszaszámolt óradíj': 'Hodinová sadzba z produkcie',
   'a havi termelésből': 'z mesačnej produkcie',
   'Szalon havi szükséglete': 'Mesačná potreba salónu',
   'Havi egyenleg': 'Mesačný zostatok',
   'ennyi marad a költségek után': 'zostáva po nákladoch salónu',
   'a szalon költségénél kevesebb marad': 'zostáva menej, než salón potrebuje',
-  'Add meg a munkatárs havi termelését és a munkaidejét, hogy legyen óradíj.':
-    'Zadajte mesačnú produkciu kolegu a pracovný čas, aby bola hodinová sadzba.',
-  'Százalékos munkatársnál ide jön a termelés maradéka, a költségek után.':
-    'Pri kolegoch na percentá sa sem dostane zvyšok produkcie po nákladoch.',
   'ezt kell a vendégnek fizetnie az óráért': 'toto musí hosť zaplatiť za hodinu',
   'A mostani árban általában már benne van a sampon, pakolás és a styling. Ha az anyag is drágult, az új anyagárat is írd be. Az ajánlott ár az óradíj × idő plusz az új anyag.':
     'Súčasná cena zvyčajne už obsahuje šampón, kúru a styling. Ak zdražel aj materiál, zadajte aj novú cenu materiálu. Odporúčaná cena je hodinová sadzba × čas plus nový materiál.',
@@ -918,11 +1264,27 @@ const slovakTranslations: Record<string, string> = {
   'év': 'roky',
   'Élő kalkuláció': 'Živý výpočet',
   'Élő számítás': 'Živý výpočet',
+  'Működés és adatok': 'Ako to funguje',
+  'Tervezés, helyi mentés, nincs süti.': 'Len plánovanie, uložené lokálne, bez cookies.',
   'Éves beruházási alap': 'Ročný investičný fond',
   'Éves beruházási tartalék': 'Ročná investičná rezerva',
   'Éves költség / fő': 'Ročný náklad / osoba',
   'Éves összes': 'Ročný súčet',
   'Éves szalonköltség / fő': 'Ročné náklady salónu / osoba',
+  'Szalonköltség fedezete': 'Kto pokryje náklady salónu',
+  'Óradíj viseli': 'Hodinová sadzba',
+  'Haszon viseli': 'Zisk',
+  'Magyarázat': 'Vysvetlenie',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Každá kalkulačka počíta bez materiálu. Náklady na materiál pridajte zvlášť do ceny pre hosťa.',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik. Ez a minimum a nettó célbérhez. Ami efelett van, {share} arányban oszlik.':
+    'Každá kalkulačka počíta bez materiálu. Toto je minimum k čistej cieľovej mzde. Čokoľvek nad to sa delí {share}.',
+  'Az óradíj nő a szalonrész miatt. A visz haza a célnál marad, a plusz a szaloné.':
+    'Hostia zaplatia viac o podiel salónu. Výplata kolegu ostane na cieli, navyše ide salónu.',
+  'A kitermelendő óradíj marad, a tulaj haszna csökken.':
+    'Požadovaná sadzba ostane, zisk majiteľa klesne.',
+  'Százalékos rendszerben a rá eső szalonrészt vagy a vendég óradíja termeli ki, vagy a szalon haszna viseli.':
+    'Pri percentuálnom podiele sa podiel na nákladoch salónu buď zarobí v sadzbe, alebo ide zo zisku salónu.',
   'Éves szükséglet': 'Ročná potreba',
   'Éves teljes költség': 'Celkové ročné náklady',
   'Fejlesztési alap': 'Rozvojový fond',
@@ -966,8 +1328,32 @@ const slovakTranslations: Record<string, string> = {
   'Egyéb': 'Iné',
   'Havi KATA': 'Mesačná KATA',
   '50.000 Ft': '50 000 Ft',
-  'Főállású katásként havonta 50.000 Ft, és kész. Az iparűzési adót a költségek között külön írd. A Járulék sort hagyd üresen, ha nincs más járulékod.':
-    'Pri hlavnej KATA je to 50 000 Ft mesačne. Miestnu daň zadajte medzi náklady. Položku Príspevky nechajte prázdnu, ak nemáte iné odvody.',
+  'Főállású katásként havonta 50.000 Ft, és kész. A kiszámolt adó és az iparűzési adó a tábla zárolt soraiba kerül.':
+    'Pri hlavnej KATA je to 50 000 Ft mesačne. Vypočítaná daň a miestna podnikateľská daň sa objavia ako uzamknuté riadky v tabuľke.',
+  'Főállású katásként havonta 50.000 Ft. Az Adó sorban jelenik meg.':
+    'Pri hlavnej KATA je to 50 000 Ft mesačne. Zobrazí sa v riadku Daň.',
+  'A 0–2% és az egyszerűsített vagy normál az iparűzési adóra vonatkozik.':
+    '0–2 % a zjednodušený alebo bežný základ sa týkajú miestnej podnikateľskej dane.',
+  'Iparűzési adó kulcsa': 'Sadzba miestnej podnikateľskej dane',
+  'HIPA adóalap': 'Základ HIPA',
+  'Egyszerűsített': 'Zjednodušený',
+  'Normál': 'Bežný',
+  'A településed 0–2%-ot vet ki a bevételre. Sok helyen 2%. Tervezés, nem hivatalos bevallás.':
+    'Obec vyberá 0–2 % zo základu dane. Často je to 2 %. Len réžia, bez materiálu. Ide o plánovanie, nie o daňové priznanie.',
+  'A településed 0–2%-ot vet ki az adóalapra. Sok helyen 2%. Anyag nélkül, tervezés, nem hivatalos bevallás.':
+    'Obec vyberá 0–2 % zo základu dane. Často je to 2 %. Len réžia, bez materiálu. Ide o plánovanie, nie o daňové priznanie.',
+  '12 millió alatti sáv · 2,5 millió Ft adóalap':
+    'Pásmo pod 12 miliónov Ft · základ 2,5 milióna Ft',
+  '12–18 millió sáv · 6 millió Ft adóalap':
+    'Pásmo 12–18 miliónov Ft · základ 6 miliónov Ft',
+  '18–25 millió sáv · 8,5 millió Ft adóalap':
+    'Pásmo 18–25 miliónov Ft · základ 8,5 milióna Ft',
+  '25 millió felett a normál adóalap jár, a rezsibevel után':
+    'Nad 25 miliónov Ft platí bežný základ z režijného obratu',
+  'Normál adóalap, a rezsibevel után':
+    'Bežný základ z režijného obratu',
+  'Ha a szalon közös költségében már szerepel az iparűzési adó, hagyd 0%-on.':
+    'Ak je miestna daň už v spoločných nákladoch salónu, nechajte 0 %.',
   'Költséghányad': 'Nákladový pomer',
   'Az átalányjövedelem 2026-ban évi 1.936.800 Ft-ig SZJA-mentes, főállásban és mellékállásban is. Mellékállásban (heti 36 órás munka vagy nappali suli) eddig a bevételig TB és szocho sem kell. Főállásban a minimum járulék ettől függetlenül megvan. Ez tervezés, nem hivatalos bevallás.':
     'Paušálny príjem je v roku 2026 oslobodený od dane z príjmu do 1 936 800 Ft ročne, v hlavnej aj vedľajšej činnosti. Vo vedľajšej činnosti (36+ hodín zamestnania alebo denné štúdium) do tohto obratu neplatíte ani odvody. V hlavnej činnosti minimálne odvody platia aj tak. Ide o plánovanie, nie o daňové priznanie.',
@@ -981,12 +1367,20 @@ const slovakTranslations: Record<string, string> = {
     'Kaderník a kozmetička zvyčajne používajú zaručenú mzdu.',
   'Fodrászat és szépségápolás általában 80%, ha csak ebből van bevételed. Ha van más tevékenységed is, 45% az egész évre. A 90% kiskereskedelemre vonatkozik.':
     'Kaderníctvo a starostlivosť o krásu sú zvyčajne 80 %, ak z toho máte jediný príjem. Iná činnosť znamená 45 % za celý rok. 90 % platí pre maloobchod.',
-  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.':
-    'Nákladový pomer len rozdeľuje obrat pre daň. Nie je to ďalší výdavok; Mesačné výdavky ostanú tým, čo ste zadali.',
+  'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, nem kell beírni a táblába.':
+    'Nákladový pomer len rozdeľuje obrat pre daň. Nie je to ďalší výdavok a do tabuľky sa nezadáva.',
   'Kitermelendő havi bevétel': 'Potrebný mesačný obrat',
+  'Ez a tiszta béred és a többi költség plusz az adó. Külön havi forgalmat nem kell beírni.':
+    'Je to čistá mzda plus ostatné náklady plus daň. Mesačný obrat zvlášť nezadávate.',
+  'Ez a tiszta béred és a többi költség plusz az adó és az iparűzési adó. Külön havi forgalmat nem kell beírni.':
+    'Je to čistá mzda plus ostatné náklady plus daň a miestna podnikateľská daň. Mesačný obrat zvlášť nezadávate.',
   'Ebből költséghányad, nem valós kiadás': 'Z toho nákladový pomer, nie skutočný výdavok',
   'Ebből átalányjövedelem': 'Z toho paušálny príjem',
-  'csak a beírt költségek, adó nélkül': 'len zadané náklady, bez dane',
+  'Adó': 'Daň',
+  'A kalkulátorból jön, nem kell a Járulékba beírni.':
+    'Pochádza z kalkulačky; do položky Príspevky ju nezadávajte.',
+  'A kalkulátorból jön, nem kell külön beírni.':
+    'Pochádza z kalkulačky; zvlášť ju nezadávate.',
   'fodrász': 'kaderník',
   'Havi adó': 'Mesačná daň',
   'Adómentes havi bevétel': 'Mesačný obrat bez dane',
@@ -996,8 +1390,10 @@ const slovakTranslations: Record<string, string> = {
   '25 év alattiak kedvezménye': 'Úľava do 25 rokov',
   '25 év alatt': 'Do 25 rokov',
   '25 betöltötte': '25 a viac',
-  '25 év alatt SZJA nélkül, havi bevétel':
-    'Mesačný obrat bez dane z príjmu do 25 rokov',
+  '25 év alatt extra SZJA-mentes jövedelem':
+    'Dodatočný príjem bez dane z príjmu do 25 rokov',
+  'Átalányadózóként is jár. A fenti adómentes sáv fölött ennyi átalányjövedelemig az SZJA 0 Ft. A TB és a szocho ettől nem esik le.':
+    'Platí aj pri paušálnej dani. Nad oslobodeným pásmom je daň z príjmu 0 Ft z tohto paušálneho príjmu. Odvody sa tým neznížia.',
   'Mellékállásban a kisebb határig minden közteher 0 Ft. A 25 év alattiak kedvezménye fölötte csak az SZJA-t viszi le, a TB és a szocho megmarad.':
     'Vo vedľajšej činnosti je do nižšej hranice všetko 0 Ft. Úľava do 25 rokov nad to ruší len daň z príjmu, odvody ostávajú.',
   'Főállásban 25 év alatt is fizetni kell a minimum TB-t és szochót. Az SZJA a kedvezmény keretéig 0 Ft.':
@@ -1126,8 +1522,43 @@ const slovakTranslations: Record<string, string> = {
   'Weboldal és domain': 'Web a doména',
   'Zene- és egyéb jogdíjak': 'Hudobné a ďalšie autorské poplatky',
   'Zsebben marad': 'Zostane v peňaženke',
+  Székbérlet: 'Prenájom kresla',
+  'Havi székbérlet': 'Mesačný prenájom kresla',
+  'Havi összes bevétel': 'Celkové mesačné tržby',
+  'Plusz bevétel': 'Ďalší príjem',
+  'Több szék esetén add össze. Nem számít bele a saját órabéredbe.':
+    'Pri viacerých kreslách sumy spočítajte. Je to naviac a vašu hodinovú sadzbu nemení.',
+  'Saját termelés, székbérlet és haszon a munkatársakon.':
+    'Vlastná produkcia, prenájom kresla a zisk z kolegov.',
+  'csak a bérleti díj, plusz tétel': 'len nájomné, položka naviac',
+  'Új bevételi sor': 'Pridať ďalší príjem',
+  'Bevétel megnevezése': 'Názov príjmu',
+  'Bevétel gyakorisága': 'Častosť príjmu',
+  'Bevétel összege': 'Suma príjmu',
+  'Saját termelés és plusz bevétel.': 'Vlastná produkcia a ďalší príjem.',
+  'Nem számít bele a saját órabéredbe.': 'Vašu hodinovú sadzbu to nemení.',
   'Cseh korona': 'Česká koruna',
   'Euro': 'Euro',
+  'Üdvözlünk': 'Vitajte',
+  'Szalon pénzügyi tervező': 'Finančný plánovač salónu',
+  'Tovább': 'Pokračovať',
+  'Tovább a kalkulátorhoz': 'Pokračovať do kalkulačky',
+  'Bezárás': 'Zavrieť',
+  'Belépőkód': 'Prístupový kód',
+  'Belépés': 'Vstúpiť',
+  'Nincs fiók és belépés. Írd be a kódot a folytatáshoz.':
+    'Žiadny účet ani prihlásenie. Pre pokračovanie zadajte kód.',
+  'Ez a kód nem jó.': 'Tento kód nie je správny.',
+  'Figyelem': 'Pozor',
+  'Anyag nélkül számolunk': 'Počítame bez materiálu',
+  'Minden kalkulátor anyag nélküli számokra vonatkozik.':
+    'Každá kalkulačka počíta bez materiálu.',
+  'Az óradíj, a költség és a termelés nem tartalmazza a vendéghez felhasznált anyagot. Az anyagköltséget a vendégárban külön add hozzá.':
+    'Hodinová sadzba, náklady aj produkcia nezahŕňajú spotrebovaný materiál. Náklady na materiál pridajte zvlášť do ceny pre hosťa.',
+  'Ez egy tervező kalkulátor. Segít óradíjat, költséget és áremelést számolni. Az eredmény tájékoztató, nem helyettesíti a könyvelőt, az adótanácsadót és a hivatalos bevallást.':
+    'Toto je plánovacia kalkulačka. Pomáha spočítať hodinovú sadzbu, náklady a úpravu cien. Výsledok je orientačný a nenahrádza účtovníka, daňového poradcu ani oficiálne priznanie.',
+  'A megadott számok csak a böngésződben, ezen a készüléken maradnak. Nincs fiók, sütit nem használunk, adatot nem küldünk el. A helyi mentés a működéshez kell, hogy ne vesszenek el a beírásaid.':
+    'Zadané čísla ostávajú len v prehliadači, na tomto zariadení. Účet nie je, cookies nepoužívame a nič sa neodosiela na server. Miestne uloženie je potrebné, aby sa zadané údaje nestratili.',
 }
 
 const translationTables: Record<Exclude<Language, 'hu'>, Record<string, string>> = {
@@ -1165,6 +1596,9 @@ const textByLang = (
   return hu
 }
 
+const languageButtonLabel = (language: Language) =>
+  language === 'cs' ? 'CZ' : language.toUpperCase()
+
 const LocaleContext = createContext({
   language: 'hu' as Language,
   currency: 'HUF' as Currency,
@@ -1184,10 +1618,14 @@ type Cost = {
 type CostTemplate = Omit<Cost, 'id'>
 
 type PayMode = 'salary' | 'percent'
+type SalonCostCover = 'profit' | 'rate'
+type ContractedHours = 4 | 6 | 8
 type TaxForm = 'kata' | 'atalany' | 'custom'
 type AtalanyCostRatio = 45 | 80 | 90
 type AtalanyStatus = 'main' | 'side'
 type AtalanyWageBase = 'minimum' | 'skilled'
+type HipaPercent = 0 | 1 | 2
+type HipaMode = 'simplified' | 'normal'
 
 type TaxSettings = {
   form: TaxForm
@@ -1198,6 +1636,8 @@ type TaxSettings = {
   under25: boolean
   familyChildren: number
   customMonthly: number
+  hipaPercent: HipaPercent
+  hipaMode: HipaMode
 }
 
 const initialTax: TaxSettings = {
@@ -1209,6 +1649,8 @@ const initialTax: TaxSettings = {
   under25: false,
   familyChildren: 0,
   customMonthly: 0,
+  hipaPercent: 0,
+  hipaMode: 'simplified',
 }
 
 const KATA_MONTHLY_HUF = 50_000
@@ -1218,10 +1660,25 @@ const ATALANY_SZJA_RATE = 0.15
 const ATALANY_TB_RATE = 0.185
 const ATALANY_SZOCHO_RATE = 0.13
 const ATALANY_CONTRIB_RATE = ATALANY_TB_RATE + ATALANY_SZOCHO_RATE
+const MAX_COMMISSION_PERCENT = 80
+const FULL_TIME_DAILY_HOURS = 8
+const contractedHourOptions: ContractedHours[] = [4, 6, 8]
 const ATALANY_TAX_FREE_INCOME = (MIN_WAGE_MONTHLY * 12) / 2
 const UNDER25_MONTHLY = 715_765
 const UNDER25_ANNUAL = UNDER25_MONTHLY * 12
 const atalanyRatios: AtalanyCostRatio[] = [45, 80, 90]
+const hipaPercents: HipaPercent[] = [0, 1, 2]
+const hipaModes: HipaMode[] = ['simplified', 'normal']
+const hipaModeLabels: Record<HipaMode, string> = {
+  simplified: 'Egyszerűsített',
+  normal: 'Normál',
+}
+const HIPA_BAND_12M = 12_000_000
+const HIPA_BAND_18M = 18_000_000
+const HIPA_BAND_25M = 25_000_000
+const HIPA_BASE_UNDER_12 = 2_500_000
+const HIPA_BASE_12_18 = 6_000_000
+const HIPA_BASE_18_25 = 8_500_000
 
 const isTaxForm = (value: unknown): value is TaxForm =>
   value === 'kata' || value === 'atalany' || value === 'custom'
@@ -1234,6 +1691,68 @@ const isAtalanyStatus = (value: unknown): value is AtalanyStatus =>
 
 const isAtalanyWageBase = (value: unknown): value is AtalanyWageBase =>
   value === 'minimum' || value === 'skilled'
+
+const isHipaPercent = (value: unknown): value is HipaPercent =>
+  value === 0 || value === 1 || value === 2
+
+const parseHipaPercent = (value: unknown): HipaPercent => {
+  const percent = Number(value)
+  return isHipaPercent(percent) ? percent : 0
+}
+
+const hipaRatio = (tax: TaxSettings) =>
+  tax.hipaPercent === 1 || tax.hipaPercent === 2 ? tax.hipaPercent / 100 : 0
+
+const isHipaMode = (value: unknown): value is HipaMode =>
+  value === 'simplified' || value === 'normal'
+
+const parseHipaMode = (value: unknown): HipaMode =>
+  isHipaMode(value) ? value : 'simplified'
+
+const simplifiedHipaBaseForRevenue = (revenue: number) => {
+  if (!(revenue > 0)) return null
+  if (revenue < HIPA_BAND_12M) return HIPA_BASE_UNDER_12
+  if (revenue < HIPA_BAND_18M) return HIPA_BASE_12_18
+  if (revenue <= HIPA_BAND_25M) return HIPA_BASE_18_25
+  return null
+}
+
+const hipaOnRevenue = (revenue: number, tax: TaxSettings) => {
+  const rate = hipaRatio(tax)
+  if (!(rate > 0) || !(revenue > 0)) return 0
+  if (tax.hipaMode === 'simplified') {
+    const base = simplifiedHipaBaseForRevenue(revenue)
+    if (base !== null) return base * rate
+  }
+  return revenue * rate
+}
+
+const hipaBaseNoteKey = (revenue: number, tax: TaxSettings) => {
+  if (!(hipaRatio(tax) > 0) || !(revenue > 0)) return ''
+  if (tax.hipaMode === 'simplified') {
+    const base = simplifiedHipaBaseForRevenue(revenue)
+    if (base === HIPA_BASE_UNDER_12)
+      return '12 millió alatti sáv · 2,5 millió Ft adóalap'
+    if (base === HIPA_BASE_12_18) return '12–18 millió sáv · 6 millió Ft adóalap'
+    if (base === HIPA_BASE_18_25)
+      return '18–25 millió sáv · 8,5 millió Ft adóalap'
+    return '25 millió felett a normál adóalap jár, a rezsibevel után'
+  }
+  return 'Normál adóalap, a rezsibevel után'
+}
+
+const neededRevenueFromTarget = (target: number, tax: TaxSettings) => {
+  const rate = hipaRatio(tax)
+  if (!(rate > 0) || rate >= 1) return target
+  if (tax.hipaMode !== 'simplified') return target / (1 - rate)
+  let revenue = target
+  for (let step = 0; step < 16; step += 1) {
+    const next = target + hipaOnRevenue(revenue, tax)
+    if (Math.abs(next - revenue) < 1) return next
+    revenue = next
+  }
+  return revenue
+}
 
 const parseAtalanyCostRatio = (value: unknown): AtalanyCostRatio => {
   const ratio = Number(value)
@@ -1259,6 +1778,11 @@ const parseFamilyChildren = (value: unknown) => {
   return Math.min(4, children)
 }
 
+const parseContractedHours = (value: unknown): ContractedHours => {
+  const hours = Number(value)
+  return hours === 4 || hours === 6 ? hours : 8
+}
+
 const atalanyIncomeShare = (costRatio: number) =>
   1 - Math.min(90, Math.max(45, costRatio)) / 100
 
@@ -1272,12 +1796,6 @@ const atalanyTaxFreeRevenue = (costRatio: number) => {
 
 const atalanySzjaFreeExtra = (tax: TaxSettings) =>
   tax.under25 ? UNDER25_ANNUAL : 0
-
-const atalanySzjaFreeRevenue = (tax: TaxSettings) => {
-  const share = atalanyIncomeShare(tax.atalanyCostRatio)
-  const income = ATALANY_TAX_FREE_INCOME + atalanySzjaFreeExtra(tax)
-  return share > 0 ? income / share : 0
-}
 
 const atalanyMinMonthlyContrib = (tax: TaxSettings) =>
   tax.atalanyStatus === 'main'
@@ -1305,12 +1823,19 @@ const atalanyTaxForIncome = (income: number, tax: TaxSettings) => {
 const atalanyNeededRevenue = (costs: number, tax: TaxSettings) => {
   const base = Math.max(0, costs)
   const share = atalanyIncomeShare(tax.atalanyCostRatio)
-  if (!(share > 0)) return base + atalanyMinMonthlyContrib(tax) * 12
+  if (!(share > 0)) {
+    return neededRevenueFromTarget(
+      base + atalanyMinMonthlyContrib(tax) * 12,
+      tax,
+    )
+  }
 
   let low = base
   let high = Math.max(base + 1, base * 2 + 12_000_000)
   const netOf = (revenue: number) =>
-    revenue - atalanyTaxForIncome(revenue * share, tax)
+    revenue -
+    atalanyTaxForIncome(revenue * share, tax) -
+    hipaOnRevenue(revenue, tax)
 
   for (let step = 0; step < 8 && netOf(high) < base; step += 1) {
     high *= 2
@@ -1323,14 +1848,29 @@ const atalanyNeededRevenue = (costs: number, tax: TaxSettings) => {
   return high
 }
 
-const annualTaxOnBase = (baseAnnual: number, tax: TaxSettings) => {
-  if (tax.form === 'kata') return Math.max(0, tax.kataMonthly) * 12
+const scheduledIncomeTaxAnnual = (tax: TaxSettings) => {
+  if (tax.form === 'kata') return KATA_MONTHLY_HUF * 12
   if (tax.form === 'custom') return Math.max(0, tax.customMonthly) * 12
-  return Math.max(
-    0,
-    atalanyNeededRevenue(baseAnnual, tax) - Math.max(0, baseAnnual),
-  )
+  return 0
 }
+
+const neededRevenueAnnual = (baseAnnual: number, tax: TaxSettings) => {
+  const base = Math.max(0, baseAnnual)
+  if (tax.form === 'atalany') return atalanyNeededRevenue(base, tax)
+  return neededRevenueFromTarget(base + scheduledIncomeTaxAnnual(tax), tax)
+}
+
+const annualIncomeTaxOnBase = (baseAnnual: number, tax: TaxSettings) => {
+  if (tax.form === 'atalany') {
+    const revenue = neededRevenueAnnual(baseAnnual, tax)
+    const share = atalanyIncomeShare(tax.atalanyCostRatio)
+    return Math.max(0, atalanyTaxForIncome(revenue * share, tax))
+  }
+  return scheduledIncomeTaxAnnual(tax)
+}
+
+const annualHipaOnBase = (baseAnnual: number, tax: TaxSettings) =>
+  hipaOnRevenue(neededRevenueAnnual(baseAnnual, tax), tax)
 
 type WorkSettings = {
   workdays: number
@@ -1348,8 +1888,11 @@ type TeamMember = {
   salonShare: number | null
   payMode: PayMode
   commissionPercent: number
-  commissionAfterMaterials: boolean
   monthlyProduction: number
+  minTakeHomeMonthly: number
+  under25: boolean
+  familyChildren: number
+  contractedHours: ContractedHours
 }
 
 const multipliers: Record<Period, number> = {
@@ -1371,7 +1914,6 @@ const pricingCostHint =
 
 const soloCostTemplates: CostTemplate[] = [
   { name: 'Fizetés igényem', period: 'month', amount: 0 },
-  { name: 'Járulék', period: 'month', amount: 0 },
   { name: 'Nyugdíj-előtakarékosság', period: 'month', amount: 0 },
   { name: 'Egészség- és életbiztosítás', period: 'month', amount: 0 },
   { name: 'Betegség pénzügyi tartaléka', period: 'month', amount: 0 },
@@ -1386,7 +1928,6 @@ const soloCostTemplates: CostTemplate[] = [
   { name: 'Könyvelő', period: 'month', amount: 0 },
   { name: 'Bankköltség és termináldíj', period: 'month', amount: 0 },
   { name: 'Biztosítás', period: 'year', amount: 0 },
-  { name: 'Iparűzési adó', period: 'year', amount: 0 },
   { name: 'Kamarai hozzájárulás', period: 'year', amount: 0 },
   { name: 'Fertőtlenítő- és tisztítószerek', period: 'month', amount: 0 },
   { name: 'Textil, mosás és munkaruha', period: 'month', amount: 0 },
@@ -1431,7 +1972,6 @@ const teamStaffCostTemplates: CostTemplate[] = [
 
 const ownerCostTemplates: CostTemplate[] = [
   { name: 'Fizetés igényem', period: 'month', amount: 0 },
-  { name: 'Járulék', period: 'month', amount: 0 },
   { name: 'Munkába járás költsége', period: 'month', amount: 0 },
   { name: 'Telefon és internet', period: 'month', amount: 0 },
   { name: 'Oktatás és továbbképzés', period: 'year', amount: 0 },
@@ -1440,6 +1980,10 @@ const ownerCostTemplates: CostTemplate[] = [
   { name: 'Nyugdíj-előtakarékosság', period: 'month', amount: 0 },
   { name: 'Egészség- és életbiztosítás', period: 'month', amount: 0 },
   { name: 'Betegség pénzügyi tartaléka', period: 'month', amount: 0 },
+]
+
+const extraIncomeTemplates: CostTemplate[] = [
+  { name: 'Székbérlet', period: 'month', amount: 0 },
 ]
 
 const employeeCostTemplates: CostTemplate[] = [
@@ -1482,109 +2026,19 @@ const createEmployee = (index: number): TeamMember => ({
   salonShare: null,
   payMode: 'salary',
   commissionPercent: 50,
-  commissionAfterMaterials: true,
   monthlyProduction: 0,
+  minTakeHomeMonthly: 0,
+  under25: false,
+  familyChildren: 0,
+  contractedHours: 8,
 })
-
-type ServiceItem = {
-  id: number
-  name: string
-  minutes: number
-  materialCost: number
-  newMaterialCost: number
-  currentPrices: Record<string, number>
-}
-
-type ServicePreset = {
-  name: string
-  minutes: number
-}
-
-let nextServiceId = 1
-
-const allocateServiceId = (usedIds: number[] = []) => {
-  const id = Math.max(nextServiceId, ...usedIds, 0) + 1
-  nextServiceId = id + 1
-  return id
-}
-
-const emptyService = (usedIds: number[] = []): ServiceItem => ({
-  id: allocateServiceId(usedIds),
-  name: '',
-  minutes: 0,
-  materialCost: 0,
-  newMaterialCost: 0,
-  currentPrices: {},
-})
-
-const servicePresets: ServicePreset[] = [
-  { name: 'Női hajvágás', minutes: 60 },
-  { name: 'Férfi hajvágás', minutes: 30 },
-  { name: 'Gyermek hajvágás', minutes: 30 },
-  { name: 'Hajfestés', minutes: 90 },
-  { name: 'Melír', minutes: 120 },
-  { name: 'Balayage', minutes: 150 },
-  { name: 'Hajszárítás', minutes: 20 },
-  { name: 'Konty / alkalmi frizura', minutes: 45 },
-]
-
-const PRICE_GAP_THRESHOLD_HUF = 1
-
-const pricelistPersonKey = (
-  source: PricelistSource,
-  employeeId: number,
-) => (source === 'employee' ? `employee:${employeeId}` : source)
-
-const isPricelistPersonKey = (key: string) =>
-  key === 'solo' || key === 'owner' || /^employee:\d+$/.test(key)
-
-const currentServicePrice = (service: ServiceItem, personKey: string) =>
-  service.currentPrices[personKey] ?? 0
-
-const isBlankService = (service: ServiceItem) =>
-  !service.name.trim() &&
-  service.minutes <= 0 &&
-  service.materialCost <= 0 &&
-  service.newMaterialCost <= 0 &&
-  Object.values(service.currentPrices).every((amount) => amount <= 0)
-
-const withTrailingEmpty = (services: ServiceItem[]) => {
-  const filled = services.filter((service) => !isBlankService(service))
-  const trailingBlank = [...services].reverse().find(isBlankService)
-  const next = trailingBlank ? [...filled, trailingBlank] : filled
-  if (next.length === 0) return [emptyService()]
-  if (isBlankService(next[next.length - 1])) return next
-  return [...next, emptyService(next.map((service) => service.id))]
-}
-
-const serviceLaborCost = (hourlyRate: number, minutes: number) =>
-  hourlyRate > 0 && minutes > 0 ? (hourlyRate * minutes) / 60 : 0
-
-const recommendedMaterialCost = (service: ServiceItem) =>
-  service.newMaterialCost > 0 ? service.newMaterialCost : service.materialCost
-
-const recommendedServicePrice = (
-  hourlyRate: number,
-  minutes: number,
-  materialCost = 0,
-) => {
-  const labor = serviceLaborCost(hourlyRate, minutes)
-  return labor ? labor + materialCost : 0
-}
-
-type PriceGapTone = 'behind' | 'ahead'
-
-const priceGapTone = (
-  currentPrice: number,
-  recommended: number,
-): PriceGapTone | null => {
-  if (!currentPrice || !recommended) return null
-  if (currentPrice >= recommended) return 'ahead'
-  if (recommended - currentPrice >= PRICE_GAP_THRESHOLD_HUF) return 'behind'
-  return null
-}
 
 const STORAGE_KEY = 'armuhely.calculator.v1'
+const WELCOME_KEY = 'armuhely.welcome.dismissed.v2'
+const ACCESS_KEY = 'armuhely.access.v1'
+const SITE_ACCESS_CODE = String(
+  import.meta.env.VITE_ACCESS_CODE ?? 'LBApenzugyek2026',
+).trim()
 const STORAGE_VERSION = 1
 
 type InvestmentSettings = {
@@ -1619,10 +2073,10 @@ type PersistedCalculator = {
   soloInvestment: InvestmentSettings
   teamInvestment: InvestmentSettings
   ownerSalonShare: number | null
+  soloExtraIncome: Cost[]
+  ownerExtraIncome: Cost[]
+  salonCostCover: SalonCostCover
   pricing: PricingSettings
-  pricelistSource: PricelistSource
-  pricelistEmployeeId: number
-  services: ServiceItem[]
   soloTax: TaxSettings
   ownerTax: TaxSettings
 }
@@ -1641,17 +2095,16 @@ const isTabId = (value: unknown): value is TabId =>
   value === 'team' ||
   value === 'owner' ||
   value === 'employee' ||
-  value === 'pricing' ||
-  value === 'pricelist'
-
-const isPricelistSource = (value: unknown): value is PricelistSource =>
-  value === 'solo' || value === 'owner' || value === 'employee'
+  value === 'pricing'
 
 const isLanguage = (value: unknown): value is Language =>
   value === 'hu' || value === 'en' || value === 'cs' || value === 'sk'
 
 const isCurrency = (value: unknown): value is Currency =>
   value === 'HUF' || value === 'EUR' || value === 'CZK'
+
+const isSalonCostCover = (value: unknown): value is SalonCostCover =>
+  value === 'profit' || value === 'rate'
 
 const parseAmount = (value: unknown) => {
   const amount = Number(value)
@@ -1674,6 +2127,16 @@ const parseCost = (value: unknown): Cost | null => {
     period: value.period,
     amount: parseAmount(value.amount),
   }
+}
+
+const parseExtraIncome = (value: unknown, fallbackMonthly = 0): Cost[] => {
+  const parsed = parseCosts(value)
+  if (parsed) return parsed
+  const rows = createCosts(extraIncomeTemplates)
+  if (fallbackMonthly > 0) {
+    rows[0] = { ...rows[0], amount: fallbackMonthly }
+  }
+  return rows
 }
 
 const parseCosts = (value: unknown): Cost[] | null => {
@@ -1737,80 +2200,19 @@ const parseTaxSettings = (value: unknown): TaxSettings => {
     under25: value.under25 === true,
     familyChildren: parseFamilyChildren(value.familyChildren),
     customMonthly: parseAmount(value.customMonthly),
+    hipaPercent: parseHipaPercent(value.hipaPercent),
+    hipaMode: parseHipaMode(value.hipaMode),
   }
-}
-
-const parseCurrentPrices = (
-  value: unknown,
-  fallbackPrice: number,
-  fallbackKey: string,
-): Record<string, number> => {
-  const prices: Record<string, number> = {}
-  if (isRecord(value)) {
-    for (const [key, amount] of Object.entries(value)) {
-      if (!isPricelistPersonKey(key)) continue
-      const parsed = parseAmount(amount)
-      if (parsed > 0) prices[key] = parsed
-    }
-  }
-  if (Object.keys(prices).length > 0) return prices
-  return fallbackPrice > 0 ? { [fallbackKey]: fallbackPrice } : {}
-}
-
-const parseService = (
-  value: unknown,
-  fallbackKey: string,
-): ServiceItem | null => {
-  if (!isRecord(value) || typeof value.name !== 'string') return null
-  const id = Number(value.id)
-  if (!Number.isInteger(id) || id < 0) return null
-  return {
-    id,
-    name: value.name,
-    minutes: parseAmount(value.minutes),
-    materialCost: parseAmount(value.materialCost),
-    newMaterialCost: parseAmount(value.newMaterialCost),
-    currentPrices: parseCurrentPrices(
-      value.currentPrices,
-      parseAmount(value.currentPrice),
-      fallbackKey,
-    ),
-  }
-}
-
-const parseServices = (
-  value: unknown,
-  fallbackKey: string,
-): ServiceItem[] | null => {
-  if (value === undefined) return null
-  if (!Array.isArray(value)) return null
-  const services: ServiceItem[] = []
-  for (const item of value) {
-    const service = parseService(item, fallbackKey)
-    if (service) services.push(service)
-  }
-  return services
-}
-
-const pruneEmployeeServicePrices = (
-  services: ServiceItem[],
-  employeeId: number,
-) => {
-  const removedKey = `employee:${employeeId}`
-  return services.map((service) => {
-    if (!(removedKey in service.currentPrices)) return service
-    const currentPrices = { ...service.currentPrices }
-    delete currentPrices[removedKey]
-    return { ...service, currentPrices }
-  })
 }
 
 const droppedCostKeys = ['toborzás és betanítás', 'anyagköltség']
+const soloDroppedCostKeys = [...droppedCostKeys, 'járulék', 'iparűzési adó']
+const ownerDroppedCostKeys = [...droppedCostKeys, 'járulék']
 
-const withoutDroppedCosts = (costs: Cost[]) =>
+const withoutDroppedCosts = (costs: Cost[], keys = droppedCostKeys) =>
   costs.filter(
     (cost) =>
-      !droppedCostKeys.includes(translate('hu', cost.name).trim().toLowerCase()),
+      !keys.includes(translate('hu', cost.name).trim().toLowerCase()),
   )
 
 const parseEmployee = (value: unknown): TeamMember | null => {
@@ -1834,9 +2236,15 @@ const parseEmployee = (value: unknown): TeamMember | null => {
     commissionPercent:
       value.commissionPercent === undefined
         ? 50
-        : Math.min(90, Math.max(0, parseAmount(value.commissionPercent))),
-    commissionAfterMaterials: value.commissionAfterMaterials !== false,
+        : Math.min(
+            MAX_COMMISSION_PERCENT,
+            Math.max(0, parseAmount(value.commissionPercent)),
+          ),
     monthlyProduction: parseAmount(value.monthlyProduction),
+    minTakeHomeMonthly: parseAmount(value.minTakeHomeMonthly),
+    under25: value.under25 === true,
+    familyChildren: parseFamilyChildren(value.familyChildren),
+    contractedHours: parseContractedHours(value.contractedHours),
   }
 }
 
@@ -1844,8 +2252,10 @@ const parsePersistedCalculator = (
   value: unknown,
 ): PersistedCalculator | null => {
   if (!isRecord(value) || value.version !== STORAGE_VERSION) return null
+  const activeTab =
+    value.activeTab === 'pricelist' ? 'pricing' : value.activeTab
   if (
-    !isTabId(value.activeTab) ||
+    !isTabId(activeTab) ||
     !isLanguage(value.language) ||
     !isCurrency(value.currency)
   ) {
@@ -1892,37 +2302,32 @@ const parsePersistedCalculator = (
     value.ownerSalonShare === null || value.ownerSalonShare === undefined
       ? null
       : parseAmount(value.ownerSalonShare)
-  const pricelistSource = isPricelistSource(value.pricelistSource)
-    ? value.pricelistSource
-    : 'solo'
-  const pricelistEmployeeId = Number.isInteger(Number(value.pricelistEmployeeId))
-    ? Number(value.pricelistEmployeeId)
-    : resolvedEmployeeId
   return {
     version: STORAGE_VERSION,
-    activeTab: value.activeTab,
+    activeTab,
     language: value.language,
     currency: value.currency,
     soloWork,
     ownerWork,
     employees,
     activeEmployeeId: resolvedEmployeeId,
-    soloCosts: withoutDroppedCosts(soloCosts),
+    soloCosts: withoutDroppedCosts(soloCosts, soloDroppedCostKeys),
     teamCosts: withoutDroppedCosts(teamCosts),
     teamStaffCosts: withoutDroppedCosts(teamStaffCosts),
-    ownerCosts: withoutDroppedCosts(ownerCosts),
+    ownerCosts: withoutDroppedCosts(ownerCosts, ownerDroppedCostKeys),
     teamSize: parseAmount(value.teamSize),
     soloInvestment,
     teamInvestment,
     ownerSalonShare,
+    soloExtraIncome: parseExtraIncome(value.soloExtraIncome),
+    ownerExtraIncome: parseExtraIncome(
+      value.ownerExtraIncome,
+      parseAmount(value.ownerChairRentMonthly),
+    ),
+    salonCostCover: isSalonCostCover(value.salonCostCover)
+      ? value.salonCostCover
+      : 'rate',
     pricing,
-    pricelistSource,
-    pricelistEmployeeId,
-    services:
-      parseServices(
-        value.services,
-        pricelistPersonKey(pricelistSource, pricelistEmployeeId),
-      ) ?? [],
     soloTax: parseTaxSettings(value.soloTax),
     ownerTax: parseTaxSettings(value.ownerTax),
   }
@@ -1948,12 +2353,65 @@ const writePersistedCalculator = (snapshot: PersistedCalculator) => {
   }
 }
 
+const readWelcomeDismissed = () => {
+  if (typeof window === 'undefined') return true
+  try {
+    return window.localStorage.getItem(WELCOME_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+const writeWelcomeDismissed = () => {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(WELCOME_KEY, '1')
+  } catch {
+    return
+  }
+}
+
+const accessFingerprint = async (code: string) => {
+  const buffer = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(`armuhely.access:${code}`),
+  )
+  return Array.from(new Uint8Array(buffer), (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('')
+}
+
+const readAccessUnlocked = async () => {
+  if (typeof window === 'undefined') return false
+  try {
+    const saved = window.localStorage.getItem(ACCESS_KEY)
+    if (!saved) return false
+    return saved === (await accessFingerprint(SITE_ACCESS_CODE))
+  } catch {
+    return false
+  }
+}
+
+const writeAccessUnlocked = async () => {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(
+      ACCESS_KEY,
+      await accessFingerprint(SITE_ACCESS_CODE),
+    )
+  } catch {
+    return
+  }
+}
+
 const adoptIdCounters = (snapshot: PersistedCalculator) => {
   const costIds = [
     ...snapshot.soloCosts,
     ...snapshot.teamCosts,
     ...snapshot.teamStaffCosts,
     ...snapshot.ownerCosts,
+    ...snapshot.soloExtraIncome,
+    ...snapshot.ownerExtraIncome,
     ...snapshot.employees.flatMap((member) => member.costs),
   ].map((cost) => cost.id)
   nextCostId = Math.max(nextCostId, ...costIds, 99) + 1
@@ -1963,9 +2421,6 @@ const adoptIdCounters = (snapshot: PersistedCalculator) => {
       ...snapshot.employees.map((member) => member.id),
       0,
     ) + 1
-  nextServiceId =
-    Math.max(nextServiceId, ...snapshot.services.map((service) => service.id), 0) +
-    1
 }
 
 const employeeProfitNames = [
@@ -2015,13 +2470,6 @@ const tabs: Array<{
     description: 'Költségváltozásból ajánlott korrekció',
     icon: TrendingUp,
   },
-  {
-    id: 'pricelist',
-    label: 'Árlista',
-    shortLabel: 'Árlista',
-    description: 'Az óradíjadból kiszámolt szolgáltatási árak',
-    icon: Tags,
-  },
 ]
 
 const navigationGroups: Array<{
@@ -2042,7 +2490,7 @@ const navigationGroups: Array<{
   {
     id: 'pricing',
     label: 'Árazás',
-    tabIds: ['pricing', 'pricelist'],
+    tabIds: ['pricing'],
   },
 ]
 
@@ -2058,24 +2506,37 @@ const occupancyRatio = (work: WorkSettings) => {
   return Math.min(100, occupancy) / 100
 }
 
-const billableHours = (work: WorkSettings) =>
-  workDays(work) * work.hoursPerDay * occupancyRatio(work)
+const scheduledHours = (work: WorkSettings) =>
+  workDays(work) * work.hoursPerDay
 
-const wageReplacedCostKeys = [
+const billableHours = (work: WorkSettings) =>
+  scheduledHours(work) * occupancyRatio(work)
+
+const occupancyDeltaText = (
+  language: Language,
+  occupancy: number,
+  fullLabel: string,
+  currentLabel: string,
+) =>
+  textByLang(
+    language,
+    `100%-on ${fullLabel}/óra → ${occupancy}%-on ${currentLabel}/óra`,
+    `At 100% ${fullLabel}/hour → at ${occupancy}% ${currentLabel}/hour`,
+    `Při 100 % ${fullLabel}/hod → při ${occupancy} % ${currentLabel}/hod`,
+    `Pri 100 % ${fullLabel}/hod → pri ${occupancy} % ${currentLabel}/hod`,
+  )
+
+const percentHiddenCostKeys = [
   'fizetés',
   'bónusz és jutalék',
+  'járulék',
   'haszon a munkatárson',
 ]
 
-const isWageReplacedCost = (cost: Cost) =>
-  wageReplacedCostKeys.includes(translate('hu', cost.name).trim().toLowerCase())
+const costNameKey = (cost: Cost) => translate('hu', cost.name).trim().toLowerCase()
 
-const annualCostsForPayMode = (member: TeamMember) =>
-  member.payMode === 'percent'
-    ? annualTotal(member.costs.filter((cost) => !isWageReplacedCost(cost)))
-    : annualTotal(member.costs)
-
-const MAX_COMMISSION_PERCENT = 90
+const isPercentHiddenCost = (cost: Cost) =>
+  percentHiddenCostKeys.includes(costNameKey(cost))
 
 const commissionRatio = (member: TeamMember) => {
   if (member.payMode !== 'percent') return 0
@@ -2085,26 +2546,188 @@ const commissionRatio = (member: TeamMember) => {
   )
 }
 
-const memberProductionHourly = (member: TeamMember) => {
-  const hours = billableHours(member.work)
-  if (!hours || member.monthlyProduction <= 0) return 0
-  return (member.monthlyProduction * 12) / hours
+const salonKeepRate = (member: TeamMember) =>
+  1 - commissionRatio(member) * (1 + ATALANY_SZOCHO_RATE)
+
+const memberContractedHours = (member: TeamMember): ContractedHours =>
+  member.contractedHours === 4 || member.contractedHours === 6
+    ? member.contractedHours
+    : 8
+
+const employeeMinContribMonthly = (member: TeamMember) =>
+  MIN_WAGE_MONTHLY * (memberContractedHours(member) / FULL_TIME_DAILY_HOURS)
+
+type EmployeeWage = {
+  gross: number
+  szja: number
+  tb: number
+  szocho: number
+  net: number
 }
 
-const memberServiceHourly = (member: TeamMember, teamPerPerson: number) => {
-  if (member.payMode === 'percent') return memberProductionHourly(member)
+const employeeWageFromGross = (
+  grossMonthly: number,
+  member: TeamMember,
+): EmployeeWage => {
+  const gross = Math.max(0, grossMonthly)
+  const under25Free = member.under25 ? Math.min(gross, UNDER25_MONTHLY) : 0
+  const szjaBase = Math.max(0, gross - under25Free)
+  const familyBase = familyMonthlyTaxBase(member.familyChildren)
+  const szja = ATALANY_SZJA_RATE * Math.max(0, szjaBase - familyBase)
+  const familyTbCredit =
+    ATALANY_SZJA_RATE * Math.max(0, familyBase - szjaBase)
+  const contribBase =
+    gross <= 0 ? 0 : Math.max(gross, employeeMinContribMonthly(member))
+  const rawTb = ATALANY_TB_RATE * contribBase
+  const szocho = ATALANY_SZOCHO_RATE * contribBase
+  const tb = Math.max(0, rawTb - Math.min(familyTbCredit, rawTb))
+  return {
+    gross,
+    szja,
+    tb,
+    szocho,
+    net: gross - szja - tb,
+  }
+}
+
+const memberCostBaseAnnual = (member: TeamMember, teamPerPerson: number) =>
+  (member.salonShare ?? teamPerPerson) +
+  annualTotal(
+    member.payMode === 'percent'
+      ? member.costs.filter((cost) => !isPercentHiddenCost(cost))
+      : member.costs,
+  )
+
+const percentSalonRemainderAnnual = (member: TeamMember, revenue: number) => {
+  const share = commissionRatio(member)
+  const wage = employeeWageFromGross((share * revenue) / 12, member)
+  return (1 - share) * revenue - wage.szocho * 12
+}
+
+const percentRevenueMeeting = (
+  member: TeamMember,
+  remainderNeeded: number,
+  minNet: number,
+) => {
+  const share = commissionRatio(member)
+  if (share <= 0 || salonKeepRate(member) <= 0) return 0
+  const covers = (revenue: number) => {
+    const gross = (share * revenue) / 12
+    const wageBeforeCredits = employeeWageFromGross(gross, {
+      ...member,
+      under25: false,
+      familyChildren: 0,
+    })
+    if (minNet > 0 && wageBeforeCredits.net + 0.01 < minNet) return false
+    return percentSalonRemainderAnnual(member, revenue) + 0.01 >= remainderNeeded
+  }
+  if (covers(0) && minNet <= 0 && remainderNeeded <= 0) return 0
+  let low = 0
+  let high = Math.max(remainderNeeded + 1, minNet * 12 * 3, 1)
+  for (let step = 0; step < 10 && !covers(high); step += 1) high *= 2
+  if (!covers(high)) return 0
+  for (let step = 0; step < 48; step += 1) {
+    const mid = (low + high) / 2
+    if (covers(mid)) high = mid
+    else low = mid
+  }
+  return high
+}
+
+const memberPercentPlan = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
+  const otherCosts = annualTotal(
+    member.costs.filter((cost) => !isPercentHiddenCost(cost)),
+  )
+  const salonShare = member.salonShare ?? teamPerPerson
+  const minNet = Math.max(0, member.minTakeHomeMonthly)
+  const laborRevenue = percentRevenueMeeting(member, otherCosts, minNet)
+  if (salonCostCover === 'rate') {
+    return {
+      guestRevenue: laborRevenue + salonShare,
+      commissionRevenue: laborRevenue,
+    }
+  }
+  const guestRevenue = percentRevenueMeeting(
+    member,
+    otherCosts + salonShare,
+    minNet,
+  )
+  return { guestRevenue, commissionRevenue: guestRevenue }
+}
+
+const memberNeededRevenueAnnual = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
+  if (member.payMode !== 'percent') {
+    return memberCostBaseAnnual(member, teamPerPerson)
+  }
+  return memberPercentPlan(member, teamPerPerson, salonCostCover).guestRevenue
+}
+
+const memberGrossWageMonthly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
+  if (member.payMode !== 'percent') return 0
+  const { commissionRevenue } = memberPercentPlan(
+    member,
+    teamPerPerson,
+    salonCostCover,
+  )
+  return (commissionRevenue * commissionRatio(member)) / 12
+}
+
+const memberWageMonthly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) =>
+  employeeWageFromGross(
+    memberGrossWageMonthly(member, teamPerPerson, salonCostCover),
+    member,
+  )
+
+const memberTakeHomeMonthly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => memberWageMonthly(member, teamPerPerson, salonCostCover).net
+
+const memberEmployeeDeductionMonthly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
+  const wage = memberWageMonthly(member, teamPerPerson, salonCostCover)
+  return wage.szja + wage.tb
+}
+
+const memberEmployerContributionMonthly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => memberWageMonthly(member, teamPerPerson, salonCostCover).szocho
+
+const memberServiceHourly = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
   const hours = billableHours(member.work)
   if (!hours) return 0
-  const annual =
-    (member.salonShare ?? teamPerPerson) + annualCostsForPayMode(member)
-  return annual / hours
+  return memberNeededRevenueAnnual(member, teamPerPerson, salonCostCover) / hours
 }
-
-const memberMaterialFactor = (_member: TeamMember) => 1
 
 const visibleEmployeeCosts = (member: TeamMember) =>
   member.payMode === 'percent'
-    ? member.costs.filter((cost) => !isWageReplacedCost(cost))
+    ? member.costs.filter((cost) => !isPercentHiddenCost(cost))
     : member.costs
 
 const mergeEmployeeCosts = (member: TeamMember, visible: Cost[]) => {
@@ -2112,7 +2735,7 @@ const mergeEmployeeCosts = (member: TeamMember, visible: Cost[]) => {
   let index = 0
   const next: Cost[] = []
   for (const cost of member.costs) {
-    if (isWageReplacedCost(cost)) next.push(cost)
+    if (isPercentHiddenCost(cost)) next.push(cost)
     else if (index < visible.length) next.push(visible[index++])
   }
   return [...next, ...visible.slice(index)]
@@ -2125,16 +2748,28 @@ const selectedAnnualTotal = (costs: Cost[], names: string[]) =>
     )
     .reduce((sum, cost) => sum + cost.amount * multipliers[cost.period], 0)
 
-const memberStaffProfit = (member: TeamMember, teamPerPerson: number) => {
+const memberStaffProfit = (
+  member: TeamMember,
+  teamPerPerson: number,
+  salonCostCover: SalonCostCover,
+) => {
   if (member.payMode !== 'percent') {
     return selectedAnnualTotal(member.costs, employeeProfitNames)
   }
-  if (member.monthlyProduction <= 0) return 0
-  const remainder =
-    member.monthlyProduction * 12 * (1 - commissionRatio(member))
-  const costs =
-    (member.salonShare ?? teamPerPerson) + annualCostsForPayMode(member)
-  return remainder - costs
+  const { guestRevenue, commissionRevenue } = memberPercentPlan(
+    member,
+    teamPerPerson,
+    salonCostCover,
+  )
+  const grossAnnual = commissionRevenue * commissionRatio(member)
+  const szocho =
+    employeeWageFromGross(grossAnnual / 12, member).szocho * 12
+  return (
+    guestRevenue -
+    grossAnnual -
+    szocho -
+    memberCostBaseAnnual(member, teamPerPerson)
+  )
 }
 
 const currentCalendarYear = () =>
@@ -2256,6 +2891,13 @@ const slovakPublicHolidays = (year: number) => {
 const slovakWorkdaysInYear = (year: number) =>
   workdaysExcludingHolidays(year, slovakPublicHolidays(year))
 
+const calendarWorkdaysInYear = (year: number, language: Language) =>
+  language === 'cs'
+    ? czechWorkdaysInYear(year)
+    : language === 'sk'
+      ? slovakWorkdaysInYear(year)
+      : hungarianWorkdaysInYear(year)
+
 const yearInessive = (year: number) => {
   const lastDigit = year % 10
   const frontVowel = [1, 2, 4, 5, 7, 9].includes(lastDigit)
@@ -2299,24 +2941,6 @@ const fromDisplayCurrency = (
   if (currency === 'EUR') return value * rates.hufPerEur
   if (currency === 'CZK') return value * rates.hufPerCzk
   return value
-}
-
-const displayRoundingStep = (currency: Currency) => {
-  if (currency === 'EUR') return 1
-  if (currency === 'CZK') return 10
-  return 100
-}
-
-const roundDisplayedPrice = (
-  value: number,
-  currency: Currency,
-  rates: FxRates,
-) => {
-  if (!value) return 0
-  const display = toDisplayCurrency(value, currency, rates)
-  const step = displayRoundingStep(currency)
-  const rounded = Math.ceil(display / step - 1e-9) * step
-  return fromDisplayCurrency(rounded, currency, rates)
 }
 
 const formatMoney = (
@@ -2397,10 +3021,12 @@ function AmountInput({
   value,
   onChange,
   'aria-label': ariaLabel,
+  readOnly = false,
 }: {
   value: number
   onChange: (value: number) => void
   'aria-label'?: string
+  readOnly?: boolean
 }) {
   const { currency, language, hufPerEur, hufPerCzk } = useLocale()
   const rates = { hufPerEur, hufPerCzk }
@@ -2440,8 +3066,11 @@ function AmountInput({
       autoComplete="off"
       spellCheck={false}
       aria-label={ariaLabel}
+      readOnly={readOnly}
+      aria-readonly={readOnly || undefined}
       value={shown}
       onChange={(event) => {
+        if (readOnly) return
         const raw = event.target.value
         const selection = event.target.selectionStart ?? raw.length
         caretDigitsRef.current = countDigits(raw.slice(0, selection))
@@ -2532,16 +3161,27 @@ function TextField({
 function OccupancyField({
   value,
   onChange,
+  hourlyAtFull,
+  hourlyAtCurrent,
 }: {
   value: number
   onChange: (value: number) => void
+  hourlyAtFull?: number
+  hourlyAtCurrent?: number
 }) {
-  const { language } = useLocale()
+  const { language, currency, hufPerEur, hufPerCzk } = useLocale()
   const occupancy = Math.min(100, Math.max(1, value || 100))
+  const t = (text: string) => translate(language, text)
+  const money = (amount: number) =>
+    formatMoney(amount, language, currency, { hufPerEur, hufPerCzk })
+  const showDelta =
+    occupancy < 100 &&
+    Boolean(hourlyAtFull) &&
+    Boolean(hourlyAtCurrent)
 
   return (
     <label className="field occupancy-field">
-      <span className="field-label">{translate(language, 'Kihasználtság')}</span>
+      <span className="field-label">{t('Kihasználtság')}</span>
       <span className="occupancy-slider">
         <input
           type="range"
@@ -2558,8 +3198,20 @@ function OccupancyField({
         <span className="occupancy-value">{occupancy}%</span>
       </span>
       <span className="field-hint">
-        {translate(language, 'A naptár hány százaléka van tényleg tele.')}
+        {t(
+          '100% = minden óra ki van töltve. Ha lejjebb húzod, az óradíj nő, mert ugyanazt kevesebb vendégórából kell kitermelni.',
+        )}
       </span>
+      {showDelta ? (
+        <span className="field-hint occupancy-delta">
+          {occupancyDeltaText(
+            language,
+            occupancy,
+            money(hourlyAtFull ?? 0),
+            money(hourlyAtCurrent ?? 0),
+          )}
+        </span>
+      ) : null}
     </label>
   )
 }
@@ -2567,18 +3219,17 @@ function OccupancyField({
 function WorkFields({
   value,
   onChange,
+  hourlyAtFull,
+  hourlyAtCurrent,
 }: {
   value: WorkSettings
   onChange: (next: WorkSettings) => void
+  hourlyAtFull?: number
+  hourlyAtCurrent?: number
 }) {
   const { language } = useLocale()
   const year = currentCalendarYear()
-  const workdaysThisYear =
-    language === 'cs'
-      ? czechWorkdaysInYear(year)
-      : language === 'sk'
-        ? slovakWorkdaysInYear(year)
-        : hungarianWorkdaysInYear(year)
+  const workdaysThisYear = calendarWorkdaysInYear(year, language)
   const workdayHint = textByLang(
     language,
     `${yearInessive(year)} ${workdaysThisYear} munkanap van.`,
@@ -2588,6 +3239,11 @@ function WorkFields({
   )
   const update = (key: keyof WorkSettings, fieldValue: number) =>
     onChange({ ...value, [key]: fieldValue })
+
+  useEffect(() => {
+    if (value.workdays > 0 || workdaysThisYear <= 0) return
+    onChange({ ...value, workdays: workdaysThisYear })
+  }, [value.workdays, workdaysThisYear])
 
   return (
     <div className="field-grid">
@@ -2619,6 +3275,8 @@ function WorkFields({
       <OccupancyField
         value={value.occupancy}
         onChange={(occupancy) => update('occupancy', occupancy)}
+        hourlyAtFull={hourlyAtFull}
+        hourlyAtCurrent={hourlyAtCurrent}
       />
     </div>
   )
@@ -2634,16 +3292,19 @@ function TaxEditor({
   value,
   onChange,
   baseAnnual,
+  hipaContext = 'solo',
 }: {
   value: TaxSettings
   onChange: (next: TaxSettings) => void
   baseAnnual: number
+  hipaContext?: 'solo' | 'owner'
 }) {
   const { language, currency, hufPerEur, hufPerCzk } = useLocale()
   const t = (text: string) => translate(language, text)
-  const taxAnnual = annualTaxOnBase(baseAnnual, value)
+  const taxAnnual = annualIncomeTaxOnBase(baseAnnual, value)
   const taxMonthly = taxAnnual / 12
-  const neededAnnual = Math.max(0, baseAnnual) + taxAnnual
+  const neededAnnual = neededRevenueAnnual(baseAnnual, value)
+  const hipaNote = hipaBaseNoteKey(neededAnnual, value)
   const deemedCostMonthly =
     (neededAnnual * value.atalanyCostRatio) / 100 / 12
   const deemedIncomeMonthly =
@@ -2665,40 +3326,64 @@ function TaxEditor({
             type="button"
             className={value.form === form ? 'active' : ''}
             aria-pressed={value.form === form}
-            onClick={() => onChange({ ...value, form })}
+            onClick={() =>
+              onChange({
+                ...value,
+                form,
+                ...(form === 'kata' ? { kataMonthly: KATA_MONTHLY_HUF } : {}),
+              })
+            }
             key={form}
           >
             {t(taxFormLabels[form])}
           </button>
         ))}
       </div>
-      {value.form === 'kata' && (
-        <>
-          <p className="panel-lead">
-            {t(
-              'Főállású katásként havonta 50.000 Ft, és kész. Az iparűzési adót a költségek között külön írd. A Járulék sort hagyd üresen, ha nincs más járulékod.',
-            )}
-          </p>
-          <div className="tax-chips" role="group" aria-label={t('Havi KATA')}>
-            <button
-              type="button"
-              className={value.kataMonthly === KATA_MONTHLY_HUF ? 'active' : ''}
-              aria-pressed={value.kataMonthly === KATA_MONTHLY_HUF}
-              onClick={() =>
-                onChange({ ...value, kataMonthly: KATA_MONTHLY_HUF })
-              }
-            >
-              {t('50.000 Ft')}
-            </button>
-          </div>
-          <NumberField
-            label="Havi KATA"
-            value={value.kataMonthly}
-            onChange={(kataMonthly) => onChange({ ...value, kataMonthly })}
-            suffix="Ft"
-          />
-        </>
-      )}
+      {value.form === 'kata' ? (
+        <p className="panel-lead">
+          {t('Főállású katásként havonta 50.000 Ft. Az Adó sorban jelenik meg.')}
+        </p>
+      ) : null}
+      <p className="hipa-heading">{t('Iparűzési adó')}</p>
+      <p className="field-hint">
+        {t(
+          'A 0–2% és az egyszerűsített vagy normál az iparűzési adóra vonatkozik.',
+        )}
+      </p>
+      <div className="tax-chips" role="group" aria-label={t('Iparűzési adó kulcsa')}>
+        {hipaPercents.map((percent) => (
+          <button
+            type="button"
+            className={value.hipaPercent === percent ? 'active' : ''}
+            aria-pressed={value.hipaPercent === percent}
+            onClick={() => onChange({ ...value, hipaPercent: percent })}
+            key={percent}
+          >
+            {percent}%
+          </button>
+        ))}
+      </div>
+      <div className="tax-chips" role="group" aria-label={t('HIPA adóalap')}>
+        {hipaModes.map((mode) => (
+          <button
+            type="button"
+            className={value.hipaMode === mode ? 'active' : ''}
+            aria-pressed={value.hipaMode === mode}
+            onClick={() => onChange({ ...value, hipaMode: mode })}
+            key={mode}
+          >
+            {t(hipaModeLabels[mode])}
+          </button>
+        ))}
+      </div>
+      <p className="field-hint">
+        {t(
+          hipaContext === 'owner'
+            ? 'Ha a szalon közös költségében már szerepel az iparűzési adó, hagyd 0%-on.'
+            : 'A településed 0–2%-ot vet ki az adóalapra. Sok helyen 2%. Anyag nélkül, tervezés, nem hivatalos bevallás.',
+        )}
+      </p>
+      {hipaNote ? <p className="field-hint hipa-band-note">{t(hipaNote)}</p> : null}
       {value.form === 'atalany' && (
         <>
           <p className="panel-lead">
@@ -2833,7 +3518,7 @@ function TaxEditor({
           </p>
           <p className="field-hint">
             {t(
-              'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, a Havi kiadás kártyán csak az marad, amit te írtál be.',
+              'A költséghányad a bevételed felosztása az adóhoz. Nem plusz kiadás, nem kell beírni a táblába.',
             )}
           </p>
           <div className="tax-thresholds">
@@ -2845,6 +3530,11 @@ function TaxEditor({
                   {` ${t('/ hó')}`}
                 </strong>
               </div>
+              <p className="field-hint">
+                {t(
+                  'Ez a tiszta béred és a többi költség plusz az adó és az iparűzési adó. Külön havi forgalmat nem kell beírni.',
+                )}
+              </p>
               <div className="inline-total tax-split-part">
                 <span>{t('Ebből költséghányad, nem valós kiadás')}</span>
                 <strong>
@@ -2867,10 +3557,20 @@ function TaxEditor({
               </strong>
             </div>
             {value.under25 && (
-              <div className="inline-total">
-                <span>{t('25 év alatt SZJA nélkül, havi bevétel')}</span>
-                <strong>{money(atalanySzjaFreeRevenue(value) / 12)}</strong>
-              </div>
+              <>
+                <div className="inline-total">
+                  <span>{t('25 év alatt extra SZJA-mentes jövedelem')}</span>
+                  <strong>
+                    {money(UNDER25_MONTHLY)}
+                    {` ${t('/ hó')}`}
+                  </strong>
+                </div>
+                <p className="field-hint">
+                  {t(
+                    'Átalányadózóként is jár. A fenti adómentes sáv fölött ennyi átalányjövedelemig az SZJA 0 Ft. A TB és a szocho ettől nem esik le.',
+                  )}
+                </p>
+              </>
             )}
             {value.familyChildren > 0 && (
               <div className="inline-total">
@@ -2933,9 +3633,25 @@ function TaxEditor({
 function CostEditor({
   costs,
   onChange,
+  computedTaxMonthly,
+  computedHipaMonthly,
+  computedContributionMonthly,
+  computedDeductionMonthly,
+  addLabel = 'Új költségsor',
+  nameAria = 'Költség megnevezése',
+  periodAria = 'Költség gyakorisága',
+  amountAria = 'Költség összege',
 }: {
   costs: Cost[]
   onChange: (costs: Cost[]) => void
+  computedTaxMonthly?: number
+  computedHipaMonthly?: number
+  computedContributionMonthly?: number
+  computedDeductionMonthly?: number
+  addLabel?: string
+  nameAria?: string
+  periodAria?: string
+  amountAria?: string
 }) {
   const { currency, language } = useLocale()
   const t = (text: string) => translate(language, text)
@@ -2954,13 +3670,13 @@ function CostEditor({
         {costs.map((cost) => (
           <div className="cost-row" key={cost.id}>
             <input
-              aria-label={t('Költség megnevezése')}
+              aria-label={t(nameAria)}
               className="cost-name"
               value={t(cost.name)}
               onChange={(event) => updateCost(cost.id, { name: event.target.value })}
             />
             <select
-              aria-label={t('Költség gyakorisága')}
+              aria-label={t(periodAria)}
               value={cost.period}
               onChange={(event) =>
                 updateCost(cost.id, { period: event.target.value as Period })
@@ -2974,7 +3690,7 @@ function CostEditor({
             </select>
             <span className="cost-amount-shell">
               <AmountInput
-                aria-label={t('Költség összege')}
+                aria-label={t(amountAria)}
                 value={cost.amount}
                 onChange={(amount) => updateCost(cost.id, { amount })}
               />
@@ -2996,7 +3712,111 @@ function CostEditor({
             </button>
           </div>
         ))}
+        {computedTaxMonthly !== undefined && (
+          <div className="cost-row locked">
+            <input
+              aria-label={t('Adó')}
+              className="cost-name"
+              value={t('Adó')}
+              readOnly
+            />
+            <span className="cost-locked-period">{t('/ hó')}</span>
+            <span className="cost-amount-shell">
+              <AmountInput
+                aria-label={t('Adó')}
+                value={computedTaxMonthly}
+                onChange={() => undefined}
+                readOnly
+              />
+              <span>{currencySuffix(currency)}</span>
+            </span>
+            <span className="icon-button locked" aria-hidden="true">
+              <Lock size={17} />
+            </span>
+          </div>
+        )}
+        {computedHipaMonthly !== undefined && (
+          <div className="cost-row locked">
+            <input
+              aria-label={t('Iparűzési adó')}
+              className="cost-name"
+              value={t('Iparűzési adó')}
+              readOnly
+            />
+            <span className="cost-locked-period">{t('/ hó')}</span>
+            <span className="cost-amount-shell">
+              <AmountInput
+                aria-label={t('Iparűzési adó')}
+                value={computedHipaMonthly}
+                onChange={() => undefined}
+                readOnly
+              />
+              <span>{currencySuffix(currency)}</span>
+            </span>
+            <span className="icon-button locked" aria-hidden="true">
+              <Lock size={17} />
+            </span>
+          </div>
+        )}
+        {computedDeductionMonthly !== undefined && (
+          <div className="cost-row locked">
+            <input
+              aria-label={t('SZJA és TB')}
+              className="cost-name"
+              value={t('SZJA és TB')}
+              readOnly
+            />
+            <span className="cost-locked-period">{t('/ hó')}</span>
+            <span className="cost-amount-shell">
+              <AmountInput
+                aria-label={t('SZJA és TB')}
+                value={computedDeductionMonthly}
+                onChange={() => undefined}
+                readOnly
+              />
+              <span>{currencySuffix(currency)}</span>
+            </span>
+            <span className="icon-button locked" aria-hidden="true">
+              <Lock size={17} />
+            </span>
+          </div>
+        )}
+        {computedContributionMonthly !== undefined && (
+          <div className="cost-row locked">
+            <input
+              aria-label={t('Munkáltatói szocho')}
+              className="cost-name"
+              value={t('Munkáltatói szocho')}
+              readOnly
+            />
+            <span className="cost-locked-period">{t('/ hó')}</span>
+            <span className="cost-amount-shell">
+              <AmountInput
+                aria-label={t('Munkáltatói szocho')}
+                value={computedContributionMonthly}
+                onChange={() => undefined}
+                readOnly
+              />
+              <span>{currencySuffix(currency)}</span>
+            </span>
+            <span className="icon-button locked" aria-hidden="true">
+              <Lock size={17} />
+            </span>
+          </div>
+        )}
       </div>
+      {computedTaxMonthly !== undefined && (
+        <p className="field-hint">
+          {t('A kalkulátorból jön, nem kell külön beírni.')}
+        </p>
+      )}
+      {computedContributionMonthly !== undefined && (
+        <p className="field-hint">
+          {t(
+            'A visz haza nettó. A bruttóból a munkatárs fizeti a 15% SZJA-t és a 18,5% TB-t. A szalon külön fizeti a 13% szochót. Az SZJA és TB nem szalonköltség, a szocho igen. Ha a munkatárs vállalkozóként számláz, ne ezt a módot használd.',
+          )}
+        </p>
+      )}
       <button
         className="add-row-button"
         type="button"
@@ -3007,237 +3827,56 @@ function CostEditor({
           ])
         }
       >
-        <Plus size={17} /> {t('Új költségsor')}
+        <Plus size={17} /> {t(addLabel)}
       </button>
     </div>
   )
 }
 
-function ServiceEditor({
-  services,
-  hourlyRate,
-  materialFactor = 1,
-  personKey,
-  onChange,
+function HintPopup({
+  text,
+  share,
 }: {
-  services: ServiceItem[]
-  hourlyRate: number
-  materialFactor?: number
-  personKey: string
-  onChange: Dispatch<SetStateAction<ServiceItem[]>>
+  text: string
+  share?: string
 }) {
-  const { currency, language, hufPerEur, hufPerCzk } = useLocale()
-  const t = (text: string) => translate(language, text)
-  const rates = { hufPerEur, hufPerCzk }
-  const formatRecommended = (value: number) =>
-    value ? formatMoney(value, language, currency, rates) : '—'
-  const commit = (updater: (current: ServiceItem[]) => ServiceItem[]) =>
-    onChange((current) => withTrailingEmpty(updater(current)))
-  const updateService = (id: number, patch: Partial<ServiceItem>) =>
-    commit((current) =>
-      current.map((service) =>
-        service.id === id ? { ...service, ...patch } : service,
-      ),
-    )
-  const namedServices = services.filter((service) => service.name.trim())
-  const trailingBlankId = [...services].reverse().find(isBlankService)?.id
-  const addPreset = (preset: ServicePreset) => {
-    commit((current) => {
-      const alreadyAdded = current.some(
-        (service) =>
-          service.name.trim().toLowerCase() === preset.name.toLowerCase(),
-      )
-      if (alreadyAdded) return current
-      return [
-        ...current.filter((service) => !isBlankService(service)),
-        {
-          id: allocateServiceId(current.map((service) => service.id)),
-          name: preset.name,
-          minutes: preset.minutes,
-          materialCost: 0,
-          newMaterialCost: 0,
-          currentPrices: {},
-        },
-      ]
-    })
-  }
+  const { language } = useLocale()
+  const t = (value: string) => translate(language, value)
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onPointer = (event: MouseEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onPointer)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointer)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
 
   return (
-    <div className="cost-editor">
-      <div className="service-presets" aria-label={t('Szolgáltatások')}>
-        {servicePresets.map((preset) => {
-          const alreadyAdded = namedServices.some(
-            (service) =>
-              service.name.trim().toLowerCase() === preset.name.toLowerCase(),
-          )
-          return (
-            <button
-              type="button"
-              key={preset.name}
-              className={alreadyAdded ? 'in-list' : ''}
-              aria-pressed={alreadyAdded}
-              disabled={alreadyAdded}
-              onClick={() => addPreset(preset)}
-            >
-              {t(preset.name)}
-              <small>
-                {preset.minutes} {t('perc')}
-              </small>
-            </button>
-          )
-        })}
-      </div>
-      <div className="service-table-scroll">
-        <div className="service-table">
-      <div className="cost-table-head service-table-head">
-        <span>{t('Megnevezés')}</span>
-        <span>{t('Időtartam')}</span>
-        <span>{t('Jelenlegi anyag')}</span>
-        <span>{t('Új anyag')}</span>
-        <span>{t('Jelenlegi ár')}</span>
-        <span>{t('Ajánlott ár')}</span>
-        <span />
-      </div>
-      <div className="cost-list">
-        {services.map((service) => {
-          const currentPrice = currentServicePrice(service, personKey)
-          const calculated = recommendedServicePrice(
-            hourlyRate,
-            service.minutes,
-            recommendedMaterialCost(service) * materialFactor,
-          )
-          const recommended = roundDisplayedPrice(calculated, currency, rates)
-          const gap = currentPrice && recommended ? currentPrice - recommended : 0
-          const tone = priceGapTone(currentPrice, recommended)
-          const gapLabel =
-            tone === 'behind'
-              ? t('elmarad az ajánlott ártól')
-              : tone === 'ahead'
-                ? t('eléri vagy meghaladja az ajánlott árat')
-                : undefined
-          const gapText =
-            tone === 'ahead' && gap === 0
-              ? formatMoney(0, language, currency, rates)
-              : tone
-                ? `${gap > 0 ? '+' : '−'}${formatMoney(Math.abs(gap), language, currency, rates)}`
-                : ''
-          return (
-            <div className="cost-row service-row" key={service.id}>
-              <input
-                aria-label={t('Szolgáltatás megnevezése')}
-                className="cost-name"
-                value={service.name}
-                onChange={(event) =>
-                  updateService(service.id, { name: event.target.value })
-                }
-              />
-              <span className="cost-amount-shell service-minutes">
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  inputMode="numeric"
-                  aria-label={t('Időtartam')}
-                  value={service.minutes || ''}
-                  onChange={(event) =>
-                    updateService(service.id, {
-                      minutes: Number(event.target.value) || 0,
-                    })
-                  }
-                />
-                <span>{t('perc')}</span>
-              </span>
-              <span className="cost-amount-shell">
-                <AmountInput
-                  aria-label={t('Jelenlegi anyag')}
-                  value={service.materialCost}
-                  onChange={(materialCost) =>
-                    updateService(service.id, { materialCost })
-                  }
-                />
-                <span>{currencySuffix(currency)}</span>
-              </span>
-              <span className="cost-amount-shell">
-                <AmountInput
-                  aria-label={t('Új anyag')}
-                  value={service.newMaterialCost}
-                  onChange={(newMaterialCost) =>
-                    updateService(service.id, { newMaterialCost })
-                  }
-                />
-                <span>{currencySuffix(currency)}</span>
-              </span>
-              <span className="cost-amount-shell">
-                <AmountInput
-                  aria-label={t('Jelenlegi ár')}
-                  value={currentPrice}
-                  onChange={(nextPrice) => {
-                    const currentPrices = { ...service.currentPrices }
-                    if (nextPrice > 0) currentPrices[personKey] = nextPrice
-                    else delete currentPrices[personKey]
-                    updateService(service.id, { currentPrices })
-                  }}
-                />
-                <span>{currencySuffix(currency)}</span>
-              </span>
-              <div className="service-recommended">
-                <strong>{formatRecommended(recommended)}</strong>
-                {recommended &&
-                calculated &&
-                formatRecommended(recommended) !== formatRecommended(calculated) ? (
-                  <small>
-                    {t('számolt')}: {formatRecommended(calculated)}
-                  </small>
-                ) : null}
-                {tone ? (
-                  <span
-                    className={`price-gap-chip ${tone}`}
-                    aria-label={gapLabel}
-                  >
-                    {gapText}
-                  </span>
-                ) : null}
-              </div>
-              {service.id === trailingBlankId ? (
-                <span />
-              ) : (
-                <button
-                  className="icon-button danger"
-                  type="button"
-                  aria-label={`${service.name || t('Szolgáltatás megnevezése')} ${textByLang(
-                    language,
-                    'törlése',
-                    'delete',
-                    'smazat',
-                    'odstrániť',
-                  )}`}
-                  onClick={() =>
-                    commit((current) =>
-                      current.filter((item) => item.id !== service.id),
-                    )
-                  }
-                >
-                  <Trash2 size={17} />
-                </button>
-              )}
-            </div>
-          )
-        })}
-      </div>
-        </div>
-      </div>
+    <div className="hint-popup" ref={rootRef}>
       <button
-        className="add-row-button"
+        className="hint-popup-button"
         type="button"
-        onClick={() =>
-          commit((current) => [
-            ...current,
-            emptyService(current.map((service) => service.id)),
-          ])
-        }
+        aria-expanded={open}
+        aria-label={t('Magyarázat')}
+        onClick={() => setOpen((current) => !current)}
       >
-        <Plus size={17} /> {t('Új szolgáltatás')}
+        <CircleHelp size={16} />
       </button>
+      {open ? (
+        <div className="hint-popup-card" role="dialog">
+          {t(text).replaceAll('{share}', share ?? '')}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -3247,25 +3886,34 @@ function MetricCard({
   value,
   detail,
   note,
+  info,
+  infoShare,
   featured = false,
   soft = false,
+  ringed = false,
   icon: Icon,
 }: {
   label: string
   value: string
   detail: string
   note?: string
+  info?: string
+  infoShare?: string
   featured?: boolean
   soft?: boolean
+  ringed?: boolean
   icon: typeof Banknote
 }) {
   const { language } = useLocale()
   return (
     <article
-      className={`metric-card${featured ? ' featured' : ''}${soft ? ' soft' : ''}`}
+      className={`metric-card${featured ? ' featured' : ''}${soft ? ' soft' : ''}${ringed ? ' ringed' : ''}${info ? ' has-info' : ''}`}
     >
       <div className="metric-topline">
-        <span>{translate(language, label)}</span>
+        <span className="metric-topline-label">
+          {translate(language, label)}
+          {info ? <HintPopup text={info} share={infoShare} /> : null}
+        </span>
         <Icon size={18} />
       </div>
       <strong>{value}</strong>
@@ -3298,6 +3946,236 @@ function Panel({
       </header>
       {children}
     </section>
+  )
+}
+
+function WelcomeOverlay({
+  language,
+  onLanguage,
+  onDismiss,
+}: {
+  language: Language
+  onLanguage: (language: Language) => void
+  onDismiss: () => void
+}) {
+  const t = (text: string) => translate(language, text)
+  const [step, setStep] = useState<'intro' | 'notice'>('intro')
+  const actionRef = useRef<HTMLButtonElement>(null)
+  const notice = step === 'notice'
+
+  useEffect(() => {
+    actionRef.current?.focus()
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && notice) onDismiss()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [notice, onDismiss])
+
+  return (
+    <div
+      className="welcome-overlay"
+      onClick={
+        notice
+          ? (event) => {
+              if (event.target === event.currentTarget) onDismiss()
+            }
+          : undefined
+      }
+    >
+      <div
+        className={`welcome-card${notice ? ' notice' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="welcome-title"
+      >
+        {notice ? (
+          <button
+            className="welcome-close"
+            type="button"
+            aria-label={t('Bezárás')}
+            onClick={onDismiss}
+          >
+            <X size={20} />
+          </button>
+        ) : null}
+        <div className="welcome-mark" aria-hidden="true">
+          {notice ? <CircleAlert size={26} /> : <ShieldCheck size={26} />}
+        </div>
+        <span className="eyebrow">
+          {notice ? t('Figyelem') : t('Szalon pénzügyek')}
+        </span>
+        <h2 id="welcome-title">
+          {notice ? t('Anyag nélkül számolunk') : t('Üdvözlünk')}
+        </h2>
+        {notice ? (
+          <p className="welcome-kicker">{t('Minden kalkulátor anyag nélküli számokra vonatkozik.')}</p>
+        ) : (
+          <p className="welcome-kicker">{t('Szalon pénzügyi tervező')}</p>
+        )}
+        {notice ? (
+          <p>
+            {t(
+              'Az óradíj, a költség és a termelés nem tartalmazza a vendéghez felhasznált anyagot. Az anyagköltséget a vendégárban külön add hozzá.',
+            )}
+          </p>
+        ) : (
+          <>
+            <p>
+              {t(
+                'Ez egy tervező kalkulátor. Segít óradíjat, költséget és áremelést számolni. Az eredmény tájékoztató, nem helyettesíti a könyvelőt, az adótanácsadót és a hivatalos bevallást.',
+              )}
+            </p>
+            <p>
+              {t(
+                'A megadott számok csak a böngésződben, ezen a készüléken maradnak. Nincs fiók, sütit nem használunk, adatot nem küldünk el. A helyi mentés a működéshez kell, hogy ne vesszenek el a beírásaid.',
+              )}
+            </p>
+            <div
+              className="compact-switch welcome-languages"
+              role="group"
+              aria-label={textByLang(
+                language,
+                'Nyelvválasztó',
+                'Language selector',
+                'Výběr jazyka',
+                'Výber jazyka',
+              )}
+            >
+              <Languages size={16} aria-hidden="true" />
+              {(['hu', 'en', 'cs', 'sk'] as Language[]).map((option) => (
+                <button
+                  type="button"
+                  className={language === option ? 'active' : ''}
+                  aria-pressed={language === option}
+                  onClick={() => onLanguage(option)}
+                  key={option}
+                >
+                  {languageButtonLabel(option)}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <button
+          ref={actionRef}
+          className="welcome-continue"
+          type="button"
+          onClick={notice ? onDismiss : () => setStep('notice')}
+        >
+          {notice ? t('Tovább a kalkulátorhoz') : t('Tovább')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function AccessOverlay({
+  language,
+  onLanguage,
+  onUnlock,
+}: {
+  language: Language
+  onLanguage: (language: Language) => void
+  onUnlock: () => void
+}) {
+  const t = (text: string) => translate(language, text)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [code, setCode] = useState('')
+  const [wrong, setWrong] = useState(false)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  const submit = () => {
+    if (code.trim() === SITE_ACCESS_CODE) {
+      void writeAccessUnlocked().then(onUnlock)
+      return
+    }
+    setWrong(true)
+  }
+
+  return (
+    <div className="welcome-overlay">
+      <form
+        className="welcome-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="access-title"
+        onSubmit={(event) => {
+          event.preventDefault()
+          submit()
+        }}
+      >
+        <div className="welcome-mark" aria-hidden="true">
+          <Lock size={26} />
+        </div>
+        <span className="eyebrow">{t('Szalon pénzügyek')}</span>
+        <h2 id="access-title">{t('Belépőkód')}</h2>
+        <p>
+          {t(
+            'Nincs fiók és belépés. Írd be a kódot a folytatáshoz.',
+          )}
+        </p>
+        <label className="field">
+          <span className="field-label">{t('Belépőkód')}</span>
+          <span className="input-shell plain">
+            <input
+              ref={inputRef}
+              type="password"
+              autoComplete="off"
+              value={code}
+              aria-invalid={wrong}
+              onChange={(event) => {
+                setCode(event.target.value)
+                if (wrong) setWrong(false)
+              }}
+            />
+          </span>
+          {wrong ? (
+            <span className="field-hint access-error">{t('Ez a kód nem jó.')}</span>
+          ) : null}
+        </label>
+        <div
+          className="compact-switch welcome-languages"
+          role="group"
+          aria-label={textByLang(
+            language,
+            'Nyelvválasztó',
+            'Language selector',
+            'Výběr jazyka',
+            'Výber jazyka',
+          )}
+        >
+          <Languages size={16} aria-hidden="true" />
+          {(['hu', 'en', 'cs', 'sk'] as Language[]).map((option) => (
+            <button
+              type="button"
+              className={language === option ? 'active' : ''}
+              aria-pressed={language === option}
+              onClick={() => onLanguage(option)}
+              key={option}
+            >
+              {languageButtonLabel(option)}
+            </button>
+          ))}
+        </div>
+        <button className="welcome-continue" type="submit">
+          {t('Belépés')}
+        </button>
+      </form>
+    </div>
   )
 }
 
@@ -3340,6 +4218,14 @@ export default function Calculator() {
     equipmentAmount: 0,
   })
   const [ownerSalonShare, setOwnerSalonShare] = useState<number | null>(null)
+  const [soloExtraIncome, setSoloExtraIncome] = useState(() =>
+    createCosts(extraIncomeTemplates),
+  )
+  const [ownerExtraIncome, setOwnerExtraIncome] = useState(() =>
+    createCosts(extraIncomeTemplates),
+  )
+  const [salonCostCover, setSalonCostCover] =
+    useState<SalonCostCover>('rate')
   const [pricing, setPricing] = useState({
     previousMaterials: 0,
     currentMaterials: 0,
@@ -3347,13 +4233,11 @@ export default function Calculator() {
     currentOther: 0,
     currentServicePrice: 0,
   })
-  const [pricelistSource, setPricelistSource] =
-    useState<PricelistSource>('solo')
-  const [pricelistEmployeeId, setPricelistEmployeeId] = useState(1)
-  const [services, setServices] = useState<ServiceItem[]>(() => [emptyService()])
   const [soloTax, setSoloTax] = useState<TaxSettings>(initialTax)
   const [ownerTax, setOwnerTax] = useState<TaxSettings>(initialTax)
   const [storageReady, setStorageReady] = useState(false)
+  const [welcomeOpen, setWelcomeOpen] = useState(false)
+  const [unlocked, setUnlocked] = useState(false)
 
   const t = (text: string) => translate(language, text)
   const rates = { hufPerEur, hufPerCzk }
@@ -3399,24 +4283,18 @@ export default function Calculator() {
       setSoloInvestment(saved.soloInvestment)
       setTeamInvestment(saved.teamInvestment)
       setOwnerSalonShare(saved.ownerSalonShare)
+      setSoloExtraIncome(saved.soloExtraIncome)
+      setOwnerExtraIncome(saved.ownerExtraIncome)
+      setSalonCostCover(saved.salonCostCover)
       setPricing(saved.pricing)
-      setPricelistSource(saved.pricelistSource)
-      setPricelistEmployeeId(
-        saved.employees.some(
-          (member) => member.id === saved.pricelistEmployeeId,
-        )
-          ? saved.pricelistEmployeeId
-          : saved.employees[0].id,
-      )
-      setServices(
-        saved.services.length > 0
-          ? withTrailingEmpty(saved.services)
-          : [emptyService()],
-      )
       setSoloTax(saved.soloTax)
       setOwnerTax(saved.ownerTax)
     }
     setStorageReady(true)
+    setWelcomeOpen(!readWelcomeDismissed())
+    void readAccessUnlocked()
+      .then((ok) => setUnlocked(ok))
+      .catch(() => setUnlocked(false))
   }, [])
 
   useEffect(() => {
@@ -3438,10 +4316,10 @@ export default function Calculator() {
       soloInvestment,
       teamInvestment,
       ownerSalonShare,
+      soloExtraIncome,
+      ownerExtraIncome,
+      salonCostCover,
       pricing,
-      pricelistSource,
-      pricelistEmployeeId,
-      services,
       soloTax,
       ownerTax,
     }
@@ -3466,10 +4344,10 @@ export default function Calculator() {
     soloInvestment,
     teamInvestment,
     ownerSalonShare,
+    soloExtraIncome,
+    ownerExtraIncome,
+    salonCostCover,
     pricing,
-    pricelistSource,
-    pricelistEmployeeId,
-    services,
     soloTax,
     ownerTax,
   ])
@@ -3492,6 +4370,23 @@ export default function Calculator() {
     value
       ? `${formatNumber(value)} ${textByLang(language, 'értékesíthető óra', 'billable hours', 'fakturovatelných hodin', 'fakturovateľných hodín')}`
       : '—'
+  const occupancyHourlyNote = (
+    occupancy: number,
+    hourly: number,
+    hourlyFull: number,
+  ) =>
+    occupancy < 100 && hourly && hourlyFull
+      ? occupancyDeltaText(
+          language,
+          occupancy,
+          formatFt(hourlyFull),
+          formatFt(hourly),
+        )
+      : undefined
+  const taxBurdenDetail = (tax: number, hipa: number, fallback: string) =>
+    tax || hipa
+      ? `${t(hipa ? 'ebből adó és HIPA' : 'ebből adó')} ${formatFt((tax + hipa) / 12)}`
+      : fallback
   const employeeTitle = (name: string) => {
     const match = name.match(/^Munkatárs (\d+)$/)
     if (match) return `${t('Munkatárs')} ${match[1]}`
@@ -3505,23 +4400,6 @@ export default function Calculator() {
         member.id === id ? { ...member, ...patch } : member,
       ),
     )
-  const selectedPricelistMember =
-    employees.find((member) => member.id === pricelistEmployeeId) ?? employees[0]
-  const selectedPricelistWork =
-    pricelistSource === 'owner'
-      ? ownerWork
-      : pricelistSource === 'employee'
-        ? selectedPricelistMember.work
-        : soloWork
-  const setSelectedPricelistOccupancy = (occupancy: number) => {
-    if (pricelistSource === 'solo') setSoloWork({ ...soloWork, occupancy })
-    else if (pricelistSource === 'owner') setOwnerWork({ ...ownerWork, occupancy })
-    else {
-      updateEmployee(selectedPricelistMember.id, {
-        work: { ...selectedPricelistMember.work, occupancy },
-      })
-    }
-  }
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -3536,6 +4414,7 @@ export default function Calculator() {
 
   const metrics = useMemo(() => {
     const soloDays = workDays(soloWork)
+    const soloFullHours = scheduledHours(soloWork)
     const soloHours = billableHours(soloWork)
     const soloAmortization =
       soloInvestment.renovationAmount /
@@ -3543,8 +4422,11 @@ export default function Calculator() {
       soloInvestment.equipmentAmount /
         Math.max(1, soloInvestment.equipmentYears)
     const soloBase = annualTotal(soloCosts) + soloAmortization
-    const soloTaxAnnual = annualTaxOnBase(soloBase, soloTax)
-    const soloAnnual = soloBase + soloTaxAnnual
+    const soloTaxAnnual = annualIncomeTaxOnBase(soloBase, soloTax)
+    const soloHipaAnnual = annualHipaOnBase(soloBase, soloTax)
+    const soloExtraIncomeAnnual = annualTotal(soloExtraIncome)
+    const ownerExtraIncomeAnnual = annualTotal(ownerExtraIncome)
+    const soloAnnual = neededRevenueAnnual(soloBase, soloTax)
     const teamAmortization =
       teamInvestment.renovationAmount /
         Math.max(1, teamInvestment.renovationYears) +
@@ -3555,36 +4437,68 @@ export default function Calculator() {
     const teamPerPerson = teamAnnual / Math.max(1, teamSize)
     const actualOwnerShare = ownerSalonShare ?? teamPerPerson
     const ownerDays = workDays(ownerWork)
+    const ownerFullHours = scheduledHours(ownerWork)
     const ownerHours = billableHours(ownerWork)
     const ownerBase = actualOwnerShare + annualTotal(ownerCosts)
-    const ownerTaxAnnual = annualTaxOnBase(ownerBase, ownerTax)
-    const ownerAnnual = ownerBase + ownerTaxAnnual
+    const ownerTaxAnnual = annualIncomeTaxOnBase(ownerBase, ownerTax)
+    const ownerHipaAnnual = annualHipaOnBase(ownerBase, ownerTax)
+    const ownerAnnual = neededRevenueAnnual(ownerBase, ownerTax)
     const ownerPay = selectedAnnualTotal(ownerCosts, [
       'fizetés igényem',
       'fizetés',
     ])
     const ownerStaffProfit = employees.reduce(
-      (sum, member) => sum + memberStaffProfit(member, teamPerPerson),
+      (sum, member) =>
+        sum + memberStaffProfit(member, teamPerPerson, salonCostCover),
       0,
     )
     const actualEmployeeShare = activeEmployee.salonShare ?? teamPerPerson
     const employeeDays = workDays(activeEmployee.work)
+    const employeeFullHours = scheduledHours(activeEmployee.work)
     const employeeHours = billableHours(activeEmployee.work)
-    const employeeAnnual =
-      actualEmployeeShare + annualCostsForPayMode(activeEmployee)
+    const employeeAnnual = memberNeededRevenueAnnual(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
     const employeePocket = selectedAnnualTotal(activeEmployee.costs, [
       'fizetés',
       'fizetés igényem',
       'egyéb juttatás',
     ])
     const productionMonthly =
-      activeEmployee.payMode === 'percent'
-        ? activeEmployee.monthlyProduction
-        : 0
-    const takeRatio = commissionRatio(activeEmployee)
-    const takeHomeMonthly = productionMonthly * takeRatio
-    const salonCardMonthly = productionMonthly * (1 - takeRatio)
-    const producedHourly = memberServiceHourly(activeEmployee, teamPerPerson)
+      activeEmployee.payMode === 'percent' ? employeeAnnual / 12 : 0
+    const takeHomeMonthly = memberTakeHomeMonthly(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
+    const grossMonthly = memberGrossWageMonthly(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
+    const contributionMonthly = memberEmployerContributionMonthly(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
+    const deductionMonthly = memberEmployeeDeductionMonthly(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
+    const staffProfitAnnual = memberStaffProfit(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
+    const salonCardMonthly = productionMonthly - grossMonthly
+    const producedHourly = memberServiceHourly(
+      activeEmployee,
+      teamPerPerson,
+      salonCostCover,
+    )
     const pricingComplete =
       pricing.previousMaterials > 0 &&
       pricing.currentMaterials > 0 &&
@@ -3598,42 +4512,23 @@ export default function Calculator() {
       pricingComplete && pricingPrevious > 0
         ? (pricingChange / pricingPrevious) * 100
         : 0
-    const pricelistMember =
-      employees.find((member) => member.id === pricelistEmployeeId) ??
-      employees[0]
-    const pricelistHourly =
-      pricelistSource === 'owner'
-        ? ownerHours
-          ? ownerAnnual / ownerHours
-          : 0
-        : pricelistSource === 'employee'
-          ? memberServiceHourly(pricelistMember, teamPerPerson)
-          : soloHours
-            ? soloAnnual / soloHours
-            : 0
-    const pricelistMaterialFactor =
-      pricelistSource === 'employee'
-        ? memberMaterialFactor(pricelistMember)
-        : 1
-    const pricelistOccupancy =
-      pricelistSource === 'owner'
-        ? ownerWork.occupancy
-        : pricelistSource === 'employee'
-          ? pricelistMember.work.occupancy
-          : soloWork.occupancy
 
     return {
       solo: {
         annual: soloAnnual,
         monthly: soloAnnual / 12,
         hourly: soloHours ? soloAnnual / soloHours : 0,
+        hourlyFull: soloFullHours ? soloAnnual / soloFullHours : 0,
         daily: soloDays ? soloAnnual / soloDays : 0,
         days: soloDays,
         hours: soloHours,
         pocket: selectedAnnualTotal(soloCosts, ['fizetés igényem', 'fizetés']),
         amortization: soloAmortization,
         tax: soloTaxAnnual,
+        hipa: soloHipaAnnual,
         taxBase: soloBase,
+        extraIncome: soloExtraIncomeAnnual,
+        totalRevenue: soloAnnual + soloExtraIncomeAnnual,
       },
       team: {
         annual: teamAnnual,
@@ -3645,27 +4540,26 @@ export default function Calculator() {
         annual: ownerAnnual,
         monthly: ownerAnnual / 12,
         hourly: ownerHours ? ownerAnnual / ownerHours : 0,
+        hourlyFull: ownerFullHours ? ownerAnnual / ownerFullHours : 0,
         daily: ownerDays ? ownerAnnual / ownerDays : 0,
         days: ownerDays,
         hours: ownerHours,
         pocket: ownerPay,
         staffProfit: ownerStaffProfit,
+        extraIncome: ownerExtraIncomeAnnual,
+        totalRevenue:
+          ownerAnnual + ownerExtraIncomeAnnual + ownerStaffProfit,
         salonShare: actualOwnerShare,
         tax: ownerTaxAnnual,
+        hipa: ownerHipaAnnual,
         taxBase: ownerBase,
       },
       employee: {
         annual: employeeAnnual,
         monthly: employeeAnnual / 12,
         hourly: producedHourly,
-        daily:
-          activeEmployee.payMode === 'percent'
-            ? employeeDays && productionMonthly
-              ? (productionMonthly * 12) / employeeDays
-              : 0
-            : employeeDays
-              ? employeeAnnual / employeeDays
-              : 0,
+        hourlyFull: employeeFullHours ? employeeAnnual / employeeFullHours : 0,
+        daily: employeeDays ? employeeAnnual / employeeDays : 0,
         days: employeeDays,
         hours: employeeHours,
         pocket: employeePocket,
@@ -3674,7 +4568,10 @@ export default function Calculator() {
         takeHome: takeHomeMonthly,
         salonCard: salonCardMonthly,
         balance: salonCardMonthly - employeeAnnual / 12,
-        staffProfit: memberStaffProfit(activeEmployee, teamPerPerson),
+        contribution: contributionMonthly,
+        gross: grossMonthly,
+        deduction: deductionMonthly,
+        staffProfit: staffProfitAnnual,
       },
       pricing: {
         complete: pricingComplete,
@@ -3688,27 +4585,18 @@ export default function Calculator() {
             ? pricing.currentServicePrice * (1 + pricingPercent / 100)
             : 0,
       },
-      pricelist: {
-        hourly: pricelistHourly,
-        materialFactor: pricelistMaterialFactor,
-        occupancy: pricelistOccupancy,
-        fromProduction:
-          pricelistSource === 'employee' &&
-          pricelistMember.payMode === 'percent',
-        pricedCount: services.filter((service) => service.minutes > 0).length,
-      },
     }
   }, [
     activeEmployee,
     employees,
     ownerCosts,
     ownerSalonShare,
+    soloExtraIncome,
+    ownerExtraIncome,
+    salonCostCover,
     ownerTax,
     ownerWork,
     pricing,
-    pricelistSource,
-    pricelistEmployeeId,
-    services,
     soloCosts,
     soloInvestment,
     soloTax,
@@ -3720,87 +4608,74 @@ export default function Calculator() {
   ])
 
   const currentTab = tabs.find((tab) => tab.id === activeTab) ?? tabs[0]
-  const pricelistLines = services
-    .filter((service) => service.minutes > 0)
-    .map((service) => {
-      const calculated = recommendedServicePrice(
-        metrics.pricelist.hourly,
-        service.minutes,
-        recommendedMaterialCost(service) * metrics.pricelist.materialFactor,
-      )
-      const price = roundDisplayedPrice(calculated, currency, rates)
-      const label = service.name.trim() || '—'
-      return `${label} (${service.minutes} ${t('perc')}): ${formatFt(price)}`
-    })
+  const coworkerSharePercent = Math.round(
+    Math.min(
+      MAX_COMMISSION_PERCENT,
+      Math.max(0, activeEmployee.commissionPercent),
+    ),
+  )
+  const materialsFreeInfo =
+    'Minden kalkulátor anyag nélküli számokra vonatkozik. Az anyagköltséget a vendégárban külön add hozzá.'
+  const percentMinInfo =
+    'Minden kalkulátor anyag nélküli számokra vonatkozik. Ez a minimum a nettó célbérhez. Ami efelett van, {share} arányban oszlik.'
+  const percentMinShare = `${coworkerSharePercent}–${100 - coworkerSharePercent}%`
 
   const currentResultText = {
     hu: {
-      solo: `Egyszemélyes szalon – fenntartható óradíj: ${formatFt(metrics.solo.hourly)}, éves kiadás: ${formatFt(metrics.solo.taxBase)}.`,
+      solo: `Egyszemélyes szalon – fenntartható óradíj: ${formatFt(metrics.solo.hourly)}, éves kiadás: ${formatFt(metrics.solo.annual)}, plusz bevétel: ${formatFt(metrics.solo.extraIncome / 12)} / hó, havi összes bevétel: ${formatFt(metrics.solo.totalRevenue / 12)}.`,
       team: `Többszemélyes szalon – éves költség személyenként: ${formatFt(metrics.team.perPerson)}, teljes éves kiadás: ${formatFt(metrics.team.annual)}.`,
-      owner: `Saját órabérem: ${formatFt(metrics.owner.hourly)}, zsebben marad: ${formatFt(metrics.owner.pocket / 12)} / hó, haszon a munkatársakon: ${formatFt(metrics.owner.staffProfit / 12)} / hó.`,
+      owner: `Saját órabérem: ${formatFt(metrics.owner.hourly)}, zsebben marad: ${formatFt(metrics.owner.pocket / 12)} / hó, haszon a munkatársakon: ${formatFt(metrics.owner.staffProfit / 12)} / hó, plusz bevétel: ${formatFt(metrics.owner.extraIncome / 12)} / hó, havi összes bevétel: ${formatFt(metrics.owner.totalRevenue / 12)}.`,
       employee:
         activeEmployee.payMode === 'percent'
-          ? `${employeeTitle(activeEmployee.name)} – havi termelés: ${formatFt(metrics.employee.production)}, visz haza: ${formatFt(metrics.employee.takeHome)} / hó, haszon a munkatársakon: ${formatFt(metrics.employee.staffProfit / 12)} / hó, óradíj: ${formatFt(metrics.employee.hourly)}.`
+          ? `${employeeTitle(activeEmployee.name)} – kitermelendő óradíj: ${formatFt(metrics.employee.hourly)}, visz haza (nettó): ${formatFt(metrics.employee.takeHome)} / hó.`
           : `${employeeTitle(activeEmployee.name)} – kitermelendő óradíj: ${formatFt(metrics.employee.hourly)}, havi teljes költség: ${formatFt(metrics.employee.monthly)}.`,
       pricing: metrics.pricing.complete
         ? metrics.pricing.hasServicePrice
           ? `Áremelési javaslat: ${metrics.pricing.percent.toFixed(1)}%, ajánlott új ár: ${formatFt(metrics.pricing.recommended)}.`
           : `Áremelési javaslat: ${metrics.pricing.percent.toFixed(1)}%.`
         : 'Áremelés tervező – töltsd ki mindkét időszak anyagköltségét és az összes többi kiadást.',
-      pricelist: pricelistLines.length
-        ? `Árlista – óradíj: ${formatFt(metrics.pricelist.hourly)}. ${pricelistLines.join(' ')}`
-        : 'Árlista – add meg a szolgáltatások időtartamát. Az ár az óradíjból jön.',
     },
     en: {
-      solo: `Solo salon – sustainable hourly rate: ${formatFt(metrics.solo.hourly)}, annual expenses: ${formatFt(metrics.solo.taxBase)}.`,
+      solo: `Solo salon – sustainable hourly rate: ${formatFt(metrics.solo.hourly)}, annual expenses: ${formatFt(metrics.solo.annual)}, extra income: ${formatFt(metrics.solo.extraIncome / 12)} / month, total monthly revenue: ${formatFt(metrics.solo.totalRevenue / 12)}.`,
       team: `Team salon – annual cost per person: ${formatFt(metrics.team.perPerson)}, total annual expenses: ${formatFt(metrics.team.annual)}.`,
-      owner: `My hourly rate: ${formatFt(metrics.owner.hourly)}, take-home: ${formatFt(metrics.owner.pocket / 12)} / month, profit from coworkers: ${formatFt(metrics.owner.staffProfit / 12)} / month.`,
+      owner: `My hourly rate: ${formatFt(metrics.owner.hourly)}, take-home: ${formatFt(metrics.owner.pocket / 12)} / month, profit from coworkers: ${formatFt(metrics.owner.staffProfit / 12)} / month, extra income: ${formatFt(metrics.owner.extraIncome / 12)} / month, total monthly revenue: ${formatFt(metrics.owner.totalRevenue / 12)}.`,
       employee:
         activeEmployee.payMode === 'percent'
-          ? `${employeeTitle(activeEmployee.name)} – monthly production: ${formatFt(metrics.employee.production)}, take-home: ${formatFt(metrics.employee.takeHome)} / month, profit from coworkers: ${formatFt(metrics.employee.staffProfit / 12)} / month, hourly rate: ${formatFt(metrics.employee.hourly)}.`
+          ? `${employeeTitle(activeEmployee.name)} – required hourly rate: ${formatFt(metrics.employee.hourly)}, take-home (net): ${formatFt(metrics.employee.takeHome)} / month, employer social tax: ${formatFt(metrics.employee.contribution)} / month.`
           : `${employeeTitle(activeEmployee.name)} – required hourly revenue: ${formatFt(metrics.employee.hourly)}, total monthly cost: ${formatFt(metrics.employee.monthly)}.`,
       pricing: metrics.pricing.complete
         ? metrics.pricing.hasServicePrice
           ? `Suggested price adjustment: ${metrics.pricing.percent.toFixed(1)}%, recommended new price: ${formatFt(metrics.pricing.recommended)}.`
           : `Suggested price adjustment: ${metrics.pricing.percent.toFixed(1)}%.`
         : 'Price adjustment planner – fill in material costs and all other expenses for both periods.',
-      pricelist: pricelistLines.length
-        ? `Price list – hourly rate: ${formatFt(metrics.pricelist.hourly)}. ${pricelistLines.join(' ')}`
-        : 'Price list – enter service durations. Prices come from the hourly rate.',
     },
     cs: {
-      solo: `Samostatný salon – udržitelná hodinová sazba: ${formatFt(metrics.solo.hourly)}, roční výdaje: ${formatFt(metrics.solo.taxBase)}.`,
+      solo: `Samostatný salon – udržitelná hodinová sazba: ${formatFt(metrics.solo.hourly)}, roční výdaje: ${formatFt(metrics.solo.annual)}, další příjem: ${formatFt(metrics.solo.extraIncome / 12)} / měsíc, celkové měsíční tržby: ${formatFt(metrics.solo.totalRevenue / 12)}.`,
       team: `Týmový salon – roční náklad na osobu: ${formatFt(metrics.team.perPerson)}, celkové roční výdaje: ${formatFt(metrics.team.annual)}.`,
-      owner: `Moje hodinová sazba: ${formatFt(metrics.owner.hourly)}, zbude v kapse: ${formatFt(metrics.owner.pocket / 12)} / měsíc, zisk z kolegů: ${formatFt(metrics.owner.staffProfit / 12)} / měsíc.`,
+      owner: `Moje hodinová sazba: ${formatFt(metrics.owner.hourly)}, zbude v kapse: ${formatFt(metrics.owner.pocket / 12)} / měsíc, zisk z kolegů: ${formatFt(metrics.owner.staffProfit / 12)} / měsíc, další příjem: ${formatFt(metrics.owner.extraIncome / 12)} / měsíc, celkové měsíční tržby: ${formatFt(metrics.owner.totalRevenue / 12)}.`,
       employee:
         activeEmployee.payMode === 'percent'
-          ? `${employeeTitle(activeEmployee.name)} – měsíční produkce: ${formatFt(metrics.employee.production)}, odnese si: ${formatFt(metrics.employee.takeHome)} / měsíc, zisk z kolegů: ${formatFt(metrics.employee.staffProfit / 12)} / měsíc, hodinová sazba: ${formatFt(metrics.employee.hourly)}.`
+          ? `${employeeTitle(activeEmployee.name)} – potřebná hodinová sazba: ${formatFt(metrics.employee.hourly)}, odnese si (netto): ${formatFt(metrics.employee.takeHome)} / měsíc, sociální daň zaměstnavatele: ${formatFt(metrics.employee.contribution)} / měsíc.`
           : `${employeeTitle(activeEmployee.name)} – potřebná hodinová sazba: ${formatFt(metrics.employee.hourly)}, celkové měsíční náklady: ${formatFt(metrics.employee.monthly)}.`,
       pricing: metrics.pricing.complete
         ? metrics.pricing.hasServicePrice
           ? `Návrh úpravy ceny: ${metrics.pricing.percent.toFixed(1)} %, doporučená nová cena: ${formatFt(metrics.pricing.recommended)}.`
           : `Návrh úpravy ceny: ${metrics.pricing.percent.toFixed(1)} %.`
         : 'Plánovač úpravy cen – vyplňte materiálové náklady a všechny ostatní výdaje za obě období.',
-      pricelist: pricelistLines.length
-        ? `Ceník – hodinová sazba: ${formatFt(metrics.pricelist.hourly)}. ${pricelistLines.join(' ')}`
-        : 'Ceník – zadejte dobu trvání služeb. Cena vychází z hodinové sazby.',
     },
     sk: {
-      solo: `Samostatný salón – udržateľná hodinová sadzba: ${formatFt(metrics.solo.hourly)}, ročné výdavky: ${formatFt(metrics.solo.taxBase)}.`,
+      solo: `Samostatný salón – udržateľná hodinová sadzba: ${formatFt(metrics.solo.hourly)}, ročné výdavky: ${formatFt(metrics.solo.annual)}, ďalší príjem: ${formatFt(metrics.solo.extraIncome / 12)} / mesiac, celkové mesačné tržby: ${formatFt(metrics.solo.totalRevenue / 12)}.`,
       team: `Tímový salón – ročný náklad na osobu: ${formatFt(metrics.team.perPerson)}, celkové ročné výdavky: ${formatFt(metrics.team.annual)}.`,
-      owner: `Moja hodinová sadzba: ${formatFt(metrics.owner.hourly)}, zostane v peňaženke: ${formatFt(metrics.owner.pocket / 12)} / mesiac, zisk z kolegov: ${formatFt(metrics.owner.staffProfit / 12)} / mesiac.`,
+      owner: `Moja hodinová sadzba: ${formatFt(metrics.owner.hourly)}, zostane v peňaženke: ${formatFt(metrics.owner.pocket / 12)} / mesiac, zisk z kolegov: ${formatFt(metrics.owner.staffProfit / 12)} / mesiac, ďalší príjem: ${formatFt(metrics.owner.extraIncome / 12)} / mesiac, celkové mesačné tržby: ${formatFt(metrics.owner.totalRevenue / 12)}.`,
       employee:
         activeEmployee.payMode === 'percent'
-          ? `${employeeTitle(activeEmployee.name)} – mesačná produkcia: ${formatFt(metrics.employee.production)}, odnesie si: ${formatFt(metrics.employee.takeHome)} / mesiac, zisk z kolegov: ${formatFt(metrics.employee.staffProfit / 12)} / mesiac, hodinová sadzba: ${formatFt(metrics.employee.hourly)}.`
+          ? `${employeeTitle(activeEmployee.name)} – potrebná hodinová sadzba: ${formatFt(metrics.employee.hourly)}, odnesie si (netto): ${formatFt(metrics.employee.takeHome)} / mesiac, sociálna daň zamestnávateľa: ${formatFt(metrics.employee.contribution)} / mesiac.`
           : `${employeeTitle(activeEmployee.name)} – potrebná hodinová sadzba: ${formatFt(metrics.employee.hourly)}, celkové mesačné náklady: ${formatFt(metrics.employee.monthly)}.`,
       pricing: metrics.pricing.complete
         ? metrics.pricing.hasServicePrice
           ? `Návrh úpravy ceny: ${metrics.pricing.percent.toFixed(1)} %, odporúčaná nová cena: ${formatFt(metrics.pricing.recommended)}.`
           : `Návrh úpravy ceny: ${metrics.pricing.percent.toFixed(1)} %.`
         : 'Plánovač úpravy cien – vyplňte materiálové náklady a všetky ostatné výdavky za obe obdobia.',
-      pricelist: pricelistLines.length
-        ? `Cenník – hodinová sadzba: ${formatFt(metrics.pricelist.hourly)}. ${pricelistLines.join(' ')}`
-        : 'Cenník – zadajte trvanie služieb. Cena vychádza z hodinovej sadzby.',
     },
   }[language][activeTab]
 
@@ -3815,6 +4690,7 @@ export default function Calculator() {
         equipmentAmount: 0,
       })
       setSoloTax({ ...initialTax })
+      setSoloExtraIncome(createCosts(extraIncomeTemplates))
     }
     if (activeTab === 'team') {
       setTeamCosts(createCosts(teamCostTemplates))
@@ -3826,11 +4702,13 @@ export default function Calculator() {
         equipmentYears: 0,
         equipmentAmount: 0,
       })
+      setSalonCostCover('rate')
     }
     if (activeTab === 'owner') {
       setOwnerWork(initialWork)
       setOwnerCosts(createCosts(ownerCostTemplates))
       setOwnerSalonShare(null)
+      setOwnerExtraIncome(createCosts(extraIncomeTemplates))
       setOwnerTax({ ...initialTax })
     }
     if (activeTab === 'employee') {
@@ -3847,17 +4725,51 @@ export default function Calculator() {
         currentServicePrice: 0,
       })
     }
-    if (activeTab === 'pricelist') {
-      setPricelistSource('solo')
-      setPricelistEmployeeId(employees[0]?.id ?? 1)
-      setServices([emptyService()])
-    }
   }
 
   const changeTab = (id: TabId) => {
     setActiveTab(id)
     setMobileMenuOpen(false)
   }
+
+  const salonCostCoverControls = (
+    <>
+      <p className="field-hint">
+        {t(
+          'Százalékos rendszerben a rá eső szalonrészt vagy a vendég óradíja termeli ki, vagy a szalon haszna viseli.',
+        )}
+      </p>
+      <div
+        className="compact-switch pay-mode-switch"
+        role="group"
+        aria-label={t('Szalonköltség fedezete')}
+      >
+        <button
+          type="button"
+          className={salonCostCover === 'rate' ? 'active' : ''}
+          aria-pressed={salonCostCover === 'rate'}
+          onClick={() => setSalonCostCover('rate')}
+        >
+          {t('Óradíj viseli')}
+        </button>
+        <button
+          type="button"
+          className={salonCostCover === 'profit' ? 'active' : ''}
+          aria-pressed={salonCostCover === 'profit'}
+          onClick={() => setSalonCostCover('profit')}
+        >
+          {t('Haszon viseli')}
+        </button>
+      </div>
+      <p className="field-hint">
+        {salonCostCover === 'rate'
+          ? t(
+              'Az óradíj nő a szalonrész miatt. A visz haza a célnál marad, a plusz a szaloné.',
+            )
+          : t('A kitermelendő óradíj marad, a tulaj haszna csökken.')}
+      </p>
+    </>
+  )
 
   const printCurrentReport = () => {
     const previousTitle = document.title
@@ -3885,14 +4797,30 @@ export default function Calculator() {
     const nextActive = remaining.find((member) => member.id === activeEmployeeId) ?? remaining[0]
     setEmployees(remaining)
     if (nextActive) setActiveEmployeeId(nextActive.id)
-    if (!remaining.some((member) => member.id === pricelistEmployeeId) && remaining[0]) {
-      setPricelistEmployeeId(remaining[0].id)
-    }
-    setServices((current) => pruneEmployeeServicePrices(current, id))
+  }
+
+  const dismissWelcome = () => {
+    writeWelcomeDismissed()
+    setWelcomeOpen(false)
   }
 
   return (
     <LocaleContext.Provider value={{ language, currency, hufPerEur, hufPerCzk }}>
+    {!unlocked ? (
+      <AccessOverlay
+        language={language}
+        onLanguage={setLanguage}
+        onUnlock={() => setUnlocked(true)}
+      />
+    ) : (
+    <>
+    {welcomeOpen ? (
+      <WelcomeOverlay
+        language={language}
+        onLanguage={setLanguage}
+        onDismiss={dismissWelcome}
+      />
+    ) : null}
     <div className="app-shell">
       <aside className={`sidebar${mobileMenuOpen ? ' open' : ''}`}>
         <div className="brand-block">
@@ -3951,12 +4879,28 @@ export default function Calculator() {
           })}
         </nav>
 
-        <div className="sidebar-note">
-          <Sparkles size={18} />
-          <div>
-            <strong>{t('Élő számítás')}</strong>
-            <span>{t('Minden módosítás azonnal megjelenik az eredményekben.')}</span>
+        <div className="sidebar-footer">
+          <div className="sidebar-note">
+            <Sparkles size={18} />
+            <div>
+              <strong>{t('Élő számítás')}</strong>
+              <span>{t('Minden módosítás azonnal megjelenik az eredményekben.')}</span>
+            </div>
           </div>
+          <button
+            className="sidebar-legal"
+            type="button"
+            onClick={() => {
+              setWelcomeOpen(true)
+              setMobileMenuOpen(false)
+            }}
+          >
+            <ShieldCheck size={18} />
+            <span>
+              <strong>{t('Működés és adatok')}</strong>
+              <small>{t('Tervezés, helyi mentés, nincs süti.')}</small>
+            </span>
+          </button>
         </div>
       </aside>
 
@@ -4019,7 +4963,7 @@ export default function Calculator() {
                     onClick={() => setLanguage(option)}
                     key={option}
                   >
-                    {option.toUpperCase()}
+                    {languageButtonLabel(option)}
                   </button>
                 ))}
               </div>
@@ -4142,9 +5086,16 @@ export default function Calculator() {
                   icon={Banknote}
                 />
                 <MetricCard
+                  ringed
                   label="Fenntartható óradíj"
                   value={moneyOrDash(metrics.solo.hourly)}
                   detail={minuteValue(metrics.solo.hourly)}
+                  info={materialsFreeInfo}
+                  note={occupancyHourlyNote(
+                    soloWork.occupancy,
+                    metrics.solo.hourly,
+                    metrics.solo.hourlyFull,
+                  )}
                   icon={Clock3}
                 />
                 <MetricCard
@@ -4155,22 +5106,61 @@ export default function Calculator() {
                 />
                 <MetricCard
                   label="Havi kiadás"
-                  value={moneyOrDash(metrics.solo.taxBase / 12)}
-                  detail={annualValue(metrics.solo.taxBase)}
-                  note={t('csak a beírt költségek, adó nélkül')}
+                  value={moneyOrDash(metrics.solo.monthly)}
+                  detail={taxBurdenDetail(
+                    metrics.solo.tax,
+                    metrics.solo.hipa,
+                    'átlagos havi teher',
+                  )}
                   icon={ArrowDownRight}
                 />
                 <MetricCard
-                  label="Havi adó"
-                  value={moneyOrDash(metrics.solo.tax / 12)}
-                  detail={annualValue(metrics.solo.tax)}
-                  icon={Landmark}
+                  label="Éves összes"
+                  value={moneyOrDash(metrics.solo.annual)}
+                  detail={hourDetail(metrics.solo.hours)}
+                  icon={Building2}
                 />
               </div>
+              <div className="metric-grid two">
+                <MetricCard
+                  featured
+                  soft
+                  label="Székbérlet"
+                  value={monthlyValue(metrics.solo.extraIncome / 12)}
+                  detail={annualValue(metrics.solo.extraIncome)}
+                  icon={Armchair}
+                />
+                <MetricCard
+                  featured
+                  label="Havi összes bevétel"
+                  value={monthlyValue(metrics.solo.totalRevenue / 12)}
+                  detail={annualValue(metrics.solo.totalRevenue)}
+                  note={t('Saját termelés és plusz bevétel.')}
+                  icon={CircleDollarSign}
+                />
+              </div>
+              <Panel eyebrow="Plusz bevétel" title="Székbérlet">
+                <CostEditor
+                  costs={soloExtraIncome}
+                  onChange={setSoloExtraIncome}
+                  addLabel="Új bevételi sor"
+                  nameAria="Bevétel megnevezése"
+                  periodAria="Bevétel gyakorisága"
+                  amountAria="Bevétel összege"
+                />
+                <p className="panel-copy">
+                  {t('Nem számít bele a saját órabéredbe.')}
+                </p>
+              </Panel>
 
               <div className="two-column-layout">
                 <Panel eyebrow="Kapacitás" title="Munkaidő és terhelés">
-                  <WorkFields value={soloWork} onChange={setSoloWork} />
+                  <WorkFields
+                    value={soloWork}
+                    onChange={setSoloWork}
+                    hourlyAtFull={metrics.solo.hourlyFull}
+                    hourlyAtCurrent={metrics.solo.hourly}
+                  />
                 </Panel>
                 <Panel eyebrow="Fejlesztési alap" title="Nagyobb beruházások">
                   <div className="investment-grid">
@@ -4218,10 +5208,16 @@ export default function Calculator() {
                   value={soloTax}
                   onChange={setSoloTax}
                   baseAnnual={metrics.solo.taxBase}
+                  hipaContext="solo"
                 />
               </Panel>
               <Panel eyebrow="Kiadások" title="Szalon költségszerkezete">
-                <CostEditor costs={soloCosts} onChange={setSoloCosts} />
+                <CostEditor
+                  costs={soloCosts}
+                  onChange={setSoloCosts}
+                  computedTaxMonthly={metrics.solo.tax / 12}
+                  computedHipaMonthly={metrics.solo.hipa / 12}
+                />
               </Panel>
             </>
           )}
@@ -4233,6 +5229,7 @@ export default function Calculator() {
                   featured
                   label="Éves költség / fő"
                   value={moneyOrDash(metrics.team.perPerson)}
+                  info={materialsFreeInfo}
                   detail={`${teamSize} ${textByLang(
                     language,
                     'fős szalonra osztva',
@@ -4279,6 +5276,7 @@ export default function Calculator() {
                     </button>
                   </div>
                   <p className="panel-copy">{t('A közös szalonköltséget egyenlő arányban osztjuk el az aktív szakemberek között.')}</p>
+                  {salonCostCoverControls}
                 </Panel>
                 <Panel eyebrow="Beruházások" title="Közös fejlesztési keret">
                   <div className="investment-grid">
@@ -4351,23 +5349,41 @@ export default function Calculator() {
                   label="Haszon a munkatársakon"
                   value={monthlyValue(metrics.owner.staffProfit / 12)}
                   detail={annualValue(metrics.owner.staffProfit)}
-                  note={
-                    metrics.owner.pocket + metrics.owner.staffProfit
-                      ? `${t('összesen a zsebedbe')} ${monthlyValue(
-                          (metrics.owner.pocket + metrics.owner.staffProfit) / 12,
-                        )}`
-                      : t(
-                          'Százalékos munkatársnál ide jön a termelés maradéka, a költségek után.',
-                        )
-                  }
                   icon={TrendingUp}
                 />
               </div>
-              <div className="metric-grid four">
+              <div className="metric-grid two">
                 <MetricCard
+                  featured
+                  soft
+                  label="Székbérlet"
+                  value={monthlyValue(metrics.owner.extraIncome / 12)}
+                  detail={annualValue(metrics.owner.extraIncome)}
+                  icon={Armchair}
+                />
+                <MetricCard
+                  featured
+                  label="Havi összes bevétel"
+                  value={monthlyValue(metrics.owner.totalRevenue / 12)}
+                  detail={annualValue(metrics.owner.totalRevenue)}
+                  note={t(
+                    'Saját termelés, székbérlet és haszon a munkatársakon.',
+                  )}
+                  icon={CircleDollarSign}
+                />
+              </div>
+              <div className="metric-grid two">
+                <MetricCard
+                  ringed
                   label="Saját órabéred"
                   value={moneyOrDash(metrics.owner.hourly)}
                   detail={minuteValue(metrics.owner.hourly)}
+                  info={materialsFreeInfo}
+                  note={occupancyHourlyNote(
+                    ownerWork.occupancy,
+                    metrics.owner.hourly,
+                    metrics.owner.hourlyFull,
+                  )}
                   icon={Clock3}
                 />
                 <MetricCard
@@ -4376,18 +5392,23 @@ export default function Calculator() {
                   detail={workdayDetail(metrics.owner.days)}
                   icon={CalendarDays}
                 />
+              </div>
+              <div className="metric-grid two">
                 <MetricCard
                   label="Havi szükséglet"
-                  value={moneyOrDash(metrics.owner.taxBase / 12)}
-                  detail={annualValue(metrics.owner.taxBase)}
-                  note={t('csak a beírt költségek, adó nélkül')}
+                  value={moneyOrDash(metrics.owner.monthly)}
+                  detail={taxBurdenDetail(
+                    metrics.owner.tax,
+                    metrics.owner.hipa,
+                    'szalonrésszel együtt',
+                  )}
                   icon={ArrowDownRight}
                 />
                 <MetricCard
-                  label="Havi adó"
-                  value={moneyOrDash(metrics.owner.tax / 12)}
-                  detail={annualValue(metrics.owner.tax)}
-                  icon={Landmark}
+                  label="Éves szükséglet"
+                  value={moneyOrDash(metrics.owner.annual)}
+                  detail={hourDetail(metrics.owner.hours)}
+                  icon={CircleDollarSign}
                 />
               </div>
               <div className="two-column-layout">
@@ -4414,18 +5435,42 @@ export default function Calculator() {
                   )}
                 </Panel>
                 <Panel eyebrow="Kapacitás" title="Saját munkaidőd">
-                  <WorkFields value={ownerWork} onChange={setOwnerWork} />
+                  <WorkFields
+                    value={ownerWork}
+                    onChange={setOwnerWork}
+                    hourlyAtFull={metrics.owner.hourlyFull}
+                    hourlyAtCurrent={metrics.owner.hourly}
+                  />
                 </Panel>
               </div>
+              <Panel eyebrow="Plusz bevétel" title="Székbérlet">
+                <CostEditor
+                  costs={ownerExtraIncome}
+                  onChange={setOwnerExtraIncome}
+                  addLabel="Új bevételi sor"
+                  nameAria="Bevétel megnevezése"
+                  periodAria="Bevétel gyakorisága"
+                  amountAria="Bevétel összege"
+                />
+                <p className="panel-copy">
+                  {t('Nem számít bele a saját órabéredbe.')}
+                </p>
+              </Panel>
               <Panel eyebrow="Adózás" title="Adózási forma">
                 <TaxEditor
                   value={ownerTax}
                   onChange={setOwnerTax}
                   baseAnnual={metrics.owner.taxBase}
+                  hipaContext="owner"
                 />
               </Panel>
               <Panel eyebrow="Személyes célok" title="Saját költségek és jövedelem">
-                <CostEditor costs={ownerCosts} onChange={setOwnerCosts} />
+                <CostEditor
+                  costs={ownerCosts}
+                  onChange={setOwnerCosts}
+                  computedTaxMonthly={metrics.owner.tax / 12}
+                  computedHipaMonthly={metrics.owner.hipa / 12}
+                />
               </Panel>
             </>
           )}
@@ -4474,33 +5519,77 @@ export default function Calculator() {
                   <Plus size={17} /> {t('Új munkatárs')}
                 </button>
               </div>
-              <div className={activeEmployee.payMode === 'percent' ? 'metric-grid four' : 'metric-grid five'}>
+              <div className="metric-grid six">
                 {activeEmployee.payMode === 'percent' ? (
                   <>
                     <MetricCard
                       featured
-                      label="Munkatárs visz haza"
-                      value={monthlyValue(metrics.employee.takeHome)}
-                      detail={`${activeEmployee.commissionPercent || 0}% ${t('a havi termelésből')}`}
-                      icon={Banknote}
-                    />
-                    <MetricCard
-                      label="Visszaszámolt óradíj"
+                      ringed
+                      label="Kitermelendő óradíj"
                       value={moneyOrDash(metrics.employee.hourly)}
-                      detail="a havi termelésből"
+                      detail={minuteValue(metrics.employee.hourly)}
+                      info={percentMinInfo}
+                      infoShare={percentMinShare}
+                      note={occupancyHourlyNote(
+                        activeEmployee.work.occupancy,
+                        metrics.employee.hourly,
+                        metrics.employee.hourlyFull,
+                      )}
                       icon={Clock3}
                     />
                     <MetricCard
-                      label="Kitermelendő napidíj"
-                      value={moneyOrDash(metrics.employee.daily)}
-                      detail={workdayDetail(metrics.employee.days)}
-                      icon={CalendarDays}
+                      label="Munkatárs visz haza"
+                      value={monthlyValue(metrics.employee.takeHome)}
+                      detail={
+                        activeEmployee.minTakeHomeMonthly > 0 &&
+                        metrics.employee.takeHome >
+                          activeEmployee.minTakeHomeMonthly + 0.5
+                          ? activeEmployee.under25 ||
+                            activeEmployee.familyChildren > 0
+                            ? 'a kedvezmény pluszban a munkatársé, nem a szaloné'
+                            : 'több a célbérnél, mert a szalonköltség többet kíván'
+                          : 'nettó, SZJA és TB után'
+                      }
+                      icon={Banknote}
                     />
                     <MetricCard
-                      label="Szalon havi szükséglete"
-                      value={moneyOrDash(metrics.employee.monthly)}
-                      detail="minden teherrel együtt"
+                      label="Bruttó bér"
+                      value={monthlyValue(metrics.employee.gross)}
+                      detail={
+                        activeEmployee.under25
+                          ? '25 év alatt az SZJA a mentességi plafonig 0'
+                          : 'ebből megy a 15% SZJA és a 18,5% TB'
+                      }
+                      icon={Coins}
+                    />
+                    <MetricCard
+                      label="Munkáltatói szocho"
+                      value={monthlyValue(metrics.employee.contribution)}
+                      detail={
+                        metrics.employee.contribution >
+                        metrics.employee.gross * ATALANY_SZOCHO_RATE + 1
+                          ? 'járulékminimum a papíros óraszám szerint'
+                          : 'a szalon 13%-a a bruttóra'
+                      }
+                      icon={BriefcaseBusiness}
+                    />
+                    <MetricCard
+                      label="Havi termelés, ami kell"
+                      value={moneyOrDash(metrics.employee.production)}
+                      detail="anyag nélkül, a részesedéssel, a járulékokkal és a szalonköltséggel együtt"
+                      info={percentMinInfo}
+                      infoShare={percentMinShare}
                       icon={ArrowDownRight}
+                    />
+                    <MetricCard
+                      label="Szalon haszna"
+                      value={monthlyValue(metrics.employee.staffProfit / 12)}
+                      detail={
+                        salonCostCover === 'rate'
+                          ? 'a szalonrész a vendégárra megy, a visz haza a célnál marad'
+                          : 'a rá eső szalonrész a hasznot viseli, az óradíj csak akkor nő, ha a maradék kevés'
+                      }
+                      icon={TrendingUp}
                     />
                   </>
                 ) : (
@@ -4513,9 +5602,16 @@ export default function Calculator() {
                       icon={Banknote}
                     />
                     <MetricCard
+                      ringed
                       label="Kitermelendő óradíj"
                       value={moneyOrDash(metrics.employee.hourly)}
                       detail={minuteValue(metrics.employee.hourly)}
+                      info={materialsFreeInfo}
+                      note={occupancyHourlyNote(
+                        activeEmployee.work.occupancy,
+                        metrics.employee.hourly,
+                        metrics.employee.hourlyFull,
+                      )}
                       icon={Clock3}
                     />
                     <MetricCard
@@ -4574,6 +5670,8 @@ export default function Calculator() {
                       {t('Vissza az automatikus értékre')}
                     </button>
                   )}
+                  {activeEmployee.payMode === 'percent' &&
+                    salonCostCoverControls}
                 </Panel>
                 <Panel eyebrow="Kapacitás" title="Munkatárs munkaideje">
                   <WorkFields
@@ -4581,6 +5679,8 @@ export default function Calculator() {
                     onChange={(work) =>
                       updateEmployee(activeEmployee.id, { work })
                     }
+                    hourlyAtFull={metrics.employee.hourlyFull}
+                    hourlyAtCurrent={metrics.employee.hourly}
                   />
                 </Panel>
               </div>
@@ -4615,63 +5715,130 @@ export default function Calculator() {
                   <>
                     <p className="panel-lead">
                       {t(
-                        'A munkatárs havi vendégforgalma. Ebből megy a százalék, a maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg. Az óradíjat a termelésből számoljuk vissza.',
+                        'A visz haza nettó. A százalék a bruttó felosztás. A szalon haszna a maradék, nem kell külön sort kitölteni.',
                       )}
                     </p>
                     <NumberField
-                      label="Átlagos havi termelés"
-                      value={activeEmployee.monthlyProduction}
-                      onChange={(monthlyProduction) =>
+                      label="Legalább ennyit visz haza"
+                      value={activeEmployee.minTakeHomeMonthly}
+                      onChange={(minTakeHomeMonthly) =>
                         updateEmployee(activeEmployee.id, {
-                          monthlyProduction,
+                          minTakeHomeMonthly,
                         })
                       }
                       suffix="Ft"
-                      hint={
-                        activeEmployee.commissionAfterMaterials !== false
-                          ? 'A százalék az anyag nélküli termelésből számolódik. Az átlagos termelésbe az anyag nélküli forgalmat írd.'
-                          : 'A munkatárs havi vendégforgalma. Ebből megy a százalék, a maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg. Az óradíjat a termelésből számoljuk vissza.'
-                      }
+                      hint="Zsebben maradó nettó. Az óradíj addig nő, amíg ez megvan a SZJA, TB és szocho mellett."
                     />
-                    <div className="field-grid two pay-mode-fields">
-                      <NumberField
-                        label="A fodrász részesedése"
-                        value={activeEmployee.commissionPercent}
-                        onChange={(commissionPercent) =>
-                          updateEmployee(activeEmployee.id, {
-                            commissionPercent: Math.min(
-                              MAX_COMMISSION_PERCENT,
-                              Math.max(0, commissionPercent),
-                            ),
-                          })
+                    <p className="field-hint">
+                      {t(
+                        'A 25 év alatti és a családi kedvezmény a munkatárs nettójához jön pluszban. A célbér kedvezmény nélkül értendő.',
+                      )}
+                    </p>
+                    <div
+                      className="compact-switch pay-mode-switch"
+                      role="group"
+                      aria-label={t('25 év alattiak kedvezménye')}
+                    >
+                      <button
+                        type="button"
+                        className={activeEmployee.under25 ? 'active' : ''}
+                        aria-pressed={activeEmployee.under25}
+                        onClick={() =>
+                          updateEmployee(activeEmployee.id, { under25: true })
                         }
-                        suffix="%"
-                        hint="A havi termelésből ennyi a munkatársé. A maradék a Saját órabérem oldalon a Haszon a munkatársakon kártyán jelenik meg."
-                      />
-                      <label className="check-field">
-                        <input
-                          type="checkbox"
-                          checked={
-                            activeEmployee.commissionAfterMaterials !== false
+                      >
+                        {t('25 év alatt')}
+                      </button>
+                      <button
+                        type="button"
+                        className={!activeEmployee.under25 ? 'active' : ''}
+                        aria-pressed={!activeEmployee.under25}
+                        onClick={() =>
+                          updateEmployee(activeEmployee.id, { under25: false })
+                        }
+                      >
+                        {t('25 betöltötte')}
+                      </button>
+                    </div>
+                    <div
+                      className="compact-switch pay-mode-switch"
+                      role="group"
+                      aria-label={t('Családi kedvezmény')}
+                    >
+                      {familyChildOptions.map((count) => (
+                        <button
+                          type="button"
+                          className={
+                            activeEmployee.familyChildren === count
+                              ? 'active'
+                              : ''
                           }
-                          onChange={(event) =>
+                          aria-pressed={activeEmployee.familyChildren === count}
+                          onClick={() =>
                             updateEmployee(activeEmployee.id, {
-                              commissionAfterMaterials: event.target.checked,
+                              familyChildren: count,
                             })
                           }
-                        />
-                        <span>
-                          <strong>{t('Anyag levonása előbb')}</strong>
-                          <small>
-                            {t(
-                              activeEmployee.commissionAfterMaterials !== false
-                                ? 'A százalék az anyag nélküli termelésből számolódik. Az átlagos termelésbe az anyag nélküli forgalmat írd.'
-                                : 'A százalék a teljes vendégárból számolódik.',
-                            )}
-                          </small>
-                        </span>
-                      </label>
+                          key={count}
+                        >
+                          {count === 0
+                            ? t('Nincs gyerek')
+                            : count === 4
+                              ? '4+'
+                              : String(count)}
+                        </button>
+                      ))}
                     </div>
+                    <div
+                      className="compact-switch pay-mode-switch"
+                      role="group"
+                      aria-label={t('Papíros munkaidő')}
+                    >
+                      {contractedHourOptions.map((hours) => (
+                        <button
+                          type="button"
+                          className={
+                            activeEmployee.contractedHours === hours
+                              ? 'active'
+                              : ''
+                          }
+                          aria-pressed={
+                            activeEmployee.contractedHours === hours
+                          }
+                          onClick={() =>
+                            updateEmployee(activeEmployee.id, {
+                              contractedHours: hours,
+                            })
+                          }
+                          key={hours}
+                        >
+                          {t(`${hours} óra`)}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="field-hint">
+                      {t(
+                        'A papíros óraszám a TB- és szocho-minimumot arányosítja a minimálbérhez. Az óradíj a fenti munkaidőből jön.',
+                      )}
+                    </p>
+                    <NumberField
+                      label="A fodrász részesedése"
+                      value={activeEmployee.commissionPercent}
+                      onChange={(commissionPercent) =>
+                        updateEmployee(activeEmployee.id, {
+                          commissionPercent: Math.min(
+                            MAX_COMMISSION_PERCENT,
+                            Math.max(0, commissionPercent),
+                          ),
+                        })
+                      }
+                      suffix="%"
+                      hint={
+                        salonKeepRate(activeEmployee) <= 0
+                          ? 'Ennél a részesedésnél a járulékkal már nem jön ki a szalon. Csökkentsd a százalékot.'
+                          : 'A vendégforgalomból ennyi a munkatársé. A szalon a maradékból fizeti a költségeket és a 13%-os szochót.'
+                      }
+                    />
                   </>
                 )}
               </Panel>
@@ -4689,6 +5856,16 @@ export default function Calculator() {
                     updateEmployee(activeEmployee.id, {
                       costs: mergeEmployeeCosts(activeEmployee, costs),
                     })
+                  }
+                  computedDeductionMonthly={
+                    activeEmployee.payMode === 'percent'
+                      ? metrics.employee.deduction
+                      : undefined
+                  }
+                  computedContributionMonthly={
+                    activeEmployee.payMode === 'percent'
+                      ? metrics.employee.contribution
+                      : undefined
                   }
                 />
               </Panel>
@@ -4748,6 +5925,7 @@ export default function Calculator() {
                       ? `${metrics.pricing.percent.toFixed(1)}%`
                       : '—'
                   }
+                  info={materialsFreeInfo}
                   detail={
                     metrics.pricing.complete
                       ? 'minimum áremelési szint'
@@ -4831,142 +6009,11 @@ export default function Calculator() {
               </Panel>
             </>
           )}
-
-          {activeTab === 'pricelist' && (
-            <>
-              <div className="metric-grid two">
-                <MetricCard
-                  featured
-                  label={
-                    metrics.pricelist.fromProduction
-                      ? 'Visszaszámolt óradíj'
-                      : 'Kitermelendő óradíj'
-                  }
-                  value={moneyOrDash(metrics.pricelist.hourly)}
-                  detail={
-                    metrics.pricelist.fromProduction
-                      ? 'a havi termelésből'
-                      : metrics.pricelist.hourly &&
-                          metrics.pricelist.occupancy < 100
-                        ? `${metrics.pricelist.occupancy}% ${t('kihasználtsággal')}`
-                        : 'választott óradíj'
-                  }
-                  note={
-                    metrics.pricelist.hourly
-                      ? undefined
-                      : t(
-                          metrics.pricelist.fromProduction
-                            ? 'Add meg a munkatárs havi termelését és a munkaidejét, hogy legyen óradíj.'
-                            : 'Először töltsd ki a választott kalkulátort, hogy legyen óradíj.',
-                        )
-                  }
-                  icon={Clock3}
-                />
-                <MetricCard
-                  label="Kitöltött szolgáltatások"
-                  value={
-                    metrics.pricelist.pricedCount
-                      ? String(metrics.pricelist.pricedCount)
-                      : '—'
-                  }
-                  detail="időtartammal megadva"
-                  icon={Tags}
-                />
-              </div>
-              <Panel eyebrow="Szolgáltatások" title="Árlista készítése">
-                <div
-                  className="pricelist-piles"
-                  aria-label={t('Óradíj forrása')}
-                >
-                  <section
-                    className={`switcher-pile${pricelistSource === 'solo' ? ' active' : ''}`}
-                    aria-label={t('Egyéni működés')}
-                  >
-                    <div className="switcher-pile-heading">
-                      <strong>{t('Egyéni működés')}</strong>
-                    </div>
-                    <div className="switcher-pile-tabs">
-                      <button
-                        type="button"
-                        className={pricelistSource === 'solo' ? 'active' : ''}
-                        aria-pressed={pricelistSource === 'solo'}
-                        onClick={() => setPricelistSource('solo')}
-                      >
-                        {t('Egyéni')}
-                      </button>
-                    </div>
-                  </section>
-                  <section
-                    className={`switcher-pile switcher-pile-team${pricelistSource !== 'solo' ? ' active' : ''}`}
-                    aria-label={t('Többszemélyes működés')}
-                  >
-                    <div className="switcher-pile-heading">
-                      <strong>{t('Többszemélyes működés')}</strong>
-                    </div>
-                    <div className="switcher-pile-tabs">
-                      <button
-                        type="button"
-                        className={pricelistSource === 'owner' ? 'active' : ''}
-                        aria-pressed={pricelistSource === 'owner'}
-                        onClick={() => setPricelistSource('owner')}
-                      >
-                        {t('Saját')}
-                      </button>
-                      {employees.map((member) => (
-                        <button
-                          type="button"
-                          className={
-                            pricelistSource === 'employee' &&
-                            pricelistEmployeeId === member.id
-                              ? 'active'
-                              : ''
-                          }
-                          aria-pressed={
-                            pricelistSource === 'employee' &&
-                            pricelistEmployeeId === member.id
-                          }
-                          onClick={() => {
-                            setPricelistSource('employee')
-                            setPricelistEmployeeId(member.id)
-                          }}
-                          key={member.id}
-                        >
-                          {employeeTitle(member.name) || t('Munkatárs')}
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-                <p className="panel-lead">
-                  {t(
-                    'A mostani árban általában már benne van a sampon, pakolás és a styling. Ha az anyag is drágult, az új anyagárat is írd be. Az ajánlott ár az óradíj × idő plusz az új anyag.',
-                  )}
-                </p>
-                <OccupancyField
-                  value={selectedPricelistWork.occupancy}
-                  onChange={setSelectedPricelistOccupancy}
-                />
-                <p className="panel-lead">
-                  {t(
-                    'Az ajánlott ár a vendégnek mutatott, felfelé kerekített összeg. Alatta a pontos számolt érték látszik, ha eltér.',
-                  )}
-                </p>
-                <ServiceEditor
-                  services={services}
-                  hourlyRate={metrics.pricelist.hourly}
-                  materialFactor={metrics.pricelist.materialFactor}
-                  personKey={pricelistPersonKey(
-                    pricelistSource,
-                    pricelistEmployeeId,
-                  )}
-                  onChange={setServices}
-                />
-              </Panel>
-            </>
-          )}
         </div>
       </main>
     </div>
+    </>
+    )}
     </LocaleContext.Provider>
   )
 }

@@ -21,6 +21,10 @@ export const Route = createRootRoute({
         content:
           'Átlátható órabér-, szalonköltség- és áremelés kalkulátor szépségipari vállalkozásoknak.',
       },
+      {
+        name: 'robots',
+        content: 'noindex, nofollow',
+      },
     ],
   }),
   shellComponent: RootDocument,
